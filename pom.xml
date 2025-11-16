@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>app-utils</artifactId>
+    <artifactId>core-framework</artifactId>
     <version>4.0.87-SNAPSHOT</version>
 
-    <name>app-utils</name>
+    <name>core-framework</name>
     <url>http://www.example.com</url>
 
     <properties>

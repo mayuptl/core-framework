@@ -36,6 +36,9 @@ public class ScreenshotUtil
             try
             {
                 String base64Image = getBase64Screenshot(driver);
+               /* // --- DEBUG STEP: Print the character length of the Base64 string ---
+                int imageLength = base64Image.length();
+                System.out.println("DEBUG: Base64 String Character Length for Step '" + stepName + "': " + imageLength);*/
                 test.log(Status.INFO, stepName, MediaEntityBuilder.createScreenCaptureFromBase64String(base64Image).build());
             } catch (Exception e) {
                 test.log(Status.INFO, stepName + " (Screenshot failed: " + e.getMessage() + ")");

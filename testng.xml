@@ -3,16 +3,16 @@
 <suite name="Test demo" verbose="2" parallel="classes" thread-count="3">
     <listeners>
      <!--<listener class-name="listeners.ExtentVideoLogAttachListeners" />-->
-      <!-- <listener class-name="listeners.ExtentLogAttachListeners" />-->
-       <!--<listener class-name="com.aventstack.chaintest.plugins.ChainTestListener" />-->
+       <listener class-name="listeners.ExtentLogAttachListeners" />
+       <listener class-name="com.aventstack.chaintest.plugins.ChainTestListener" />
 
     </listeners>
     <test name="Test">
         <classes>
-            <!--<class name="Demo.TC01"></class>-->
+            <class name="Demo.TC01"></class>
             <class name="Demo.normal"></class>
-            <!--<class name="Demo.TC02"></class>
-            <class name="Demo.TC03"></class>-->
+            <class name="Demo.TC02"></class>
+            <class name="Demo.TC03"></class>
         </classes>
     </test>
 </suite>
