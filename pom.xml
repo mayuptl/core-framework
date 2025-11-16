@@ -5,7 +5,7 @@
 
     <groupId>org.example</groupId>
     <artifactId>core-framework</artifactId>
-    <version>4.0.87-SNAPSHOT</version>
+    <version>4.0.88</version>
 
     <name>core-framework</name>
     <url>http://www.example.com</url>
@@ -141,7 +141,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>app-utils-fat-${project.version}</finalName>
+                            <finalName>core-framework-fat-${project.version}</finalName>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <filters>
                                 <filter>

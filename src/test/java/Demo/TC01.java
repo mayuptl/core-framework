@@ -1,16 +1,15 @@
 package Demo;
 
-import core.base.TestBaseAppUtil;
-import core.config.ConfigReader;
-import core.screenshot.ScreenshotUtil;
+import core.base.CoreBaseTest;
+import core.screenshot.CoreScreenshotUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import static core.wait.WaitUtil.staticWait;
+import static core.wait.CoreWaitUtil.staticWait;
 
-public class TC01 extends TestBaseAppUtil {
+public class TC01 extends CoreBaseTest {
     @BeforeClass
     public void setup()
     {
@@ -33,7 +32,7 @@ public class TC01 extends TestBaseAppUtil {
         log.info("Test case started");
         System.err.println(driver.getCurrentUrl());
         staticWait(3);
-        ScreenshotUtil.stepss("current url");
+        CoreScreenshotUtil.stepss("current url");
         pom.logCheck();
         pomtwo.logCheck();
         log.info("This test1 log to test driver id logic This test1 log to test driver id logic This test1 log to test driver id logic");

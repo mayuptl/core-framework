@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.example</groupId>
-  <artifactId>app-utils</artifactId>
-  <name>app-utils</name>
-  <version>4.0.87-SNAPSHOT</version>
+  <artifactId>core-framework</artifactId>
+  <name>core-framework</name>
+  <version>4.0.88</version>
   <url>http://www.example.com</url>
   <build>
     <plugins>
@@ -19,7 +19,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>app-utils-fat-${project.version}</finalName>
+              <finalName>core-framework-fat-${project.version}</finalName>
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <filters>
                 <filter>

@@ -1,12 +1,12 @@
 package Demo;
 
-import core.base.TestBaseAppUtil;
+import core.base.CoreBaseTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TC02 extends TestBaseAppUtil {
+public class TC02 extends CoreBaseTest {
 
     @Test(priority = 1)
     public void EmpLoginCheck()

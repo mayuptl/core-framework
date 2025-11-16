@@ -9,7 +9,7 @@
         <Property name="CONSOLE_PATTERN">${sys:log4j2.consolePattern}</Property>
         <Property name="FILE_PATTERN">${sys:log4j2.filePattern}</Property>
         <Property name="LOG_DIR">${sys:log4j2.logDir}</Property>
-        <Property name="LOG_FILE_NAME">${sys:log4j2.logDir}/${sys:log4j2.fileName}</Property>
+       <!-- <Property name="LOG_FILE_NAME">${sys:log4j2.logDir}${sys:log4j2.fileName}</Property>-->
     </Properties>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
@@ -18,7 +18,7 @@
             <PatternLayout pattern="${CONSOLE_PATTERN}" disableAnsi="false"/>
         </Console>
         <RollingFile name="FileAppender"
-                     fileName="${sys:log4j2.logDir}/${sys:log4j2.fileName}"
+                     fileName="${sys:log4j2.logDir}${sys:log4j2.fileName}"
                      filePattern="${sys:log4j2.logDir}/archive/Logs-%d{yyyy-MM-dd}-%i.log.gz"
                      createOnDemand="true">
             <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
