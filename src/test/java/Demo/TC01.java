@@ -24,7 +24,7 @@ public class TC01 extends TestBaseAppUtil {
         Logger classLog= LogManager.getLogger("TC01");
         classLog.info("End to end completed\n");
     }
-   // @Test(priority = 1)
+    @Test(priority = 1)
     public void LoginCheck_()
     {
         Logger log= LogManager.getLogger("LoginCheck_");
@@ -44,7 +44,7 @@ public class TC01 extends TestBaseAppUtil {
         log.info("Test case pass");
         log.warn("after pass test");*/
     }
-    @Test(priority = 1)
+    @Test(priority = 2)
     public void LogOutCheck_()
     {
         Logger log= LogManager.getLogger("LogOutCheck_");

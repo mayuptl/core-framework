@@ -2,6 +2,7 @@ package listeners;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.markuputils.MarkupHelper;
 import core.logging.LogExtractorUtil;
 import managers.DriverManager;
 import managers.ExtentManager;
@@ -113,7 +114,8 @@ public class ExtentLogAttachListeners implements ITestListener {
         String styledLogs=
                 "<div style='overflow-x:auto;'><pre style='white-space: pre-wrap; word-break: break-word;'>"
                         + testLogs + "</pre></div>";
-        test.info(styledLogs);
+       // test.info(styledLogs);
+        test.info(MarkupHelper.createCodeBlock(testLogs).getMarkup());
         createClassLevelLogsFolder(testLogs,result);
     }
     public void createClassLevelLogsFolder(String testLogs,ITestResult result)

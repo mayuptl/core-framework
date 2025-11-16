@@ -40,7 +40,7 @@ public class TestBaseAppUtil {
      * NOTE: This method currently uses hardcoded initialization parameters for demonstration/local testing.
      * For production test suites, configuration should be loaded dynamically (e.g., from properties).
      */
-   // @BeforeClass
+    @BeforeClass
     public void lunchAppUtil()
     {
         String CUSTOM_OPTIONS = "ARG:--force-device-scale-factor=0.8,ARG:--start-maximized,ARG:--incognito,ARG:--disable-infobars,ARG:--enable-logging=stderr,PREF:download.default_directory=/execution-output/test-downloads/,CAP:acceptInsecureCerts=true";
