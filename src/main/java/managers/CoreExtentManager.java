@@ -11,15 +11,21 @@ import static core.config.CoreConfigReader.getStrProp;
 /**
  * Manages the ExtentReports instance and provides thread-safe access to the
  * ExtentTest object for the currently executing test method.
- *
  * This manager ensures that reporting is properly initialized and handles the
  * creation of class-level nodes and method-level test instances.
  */
 public class CoreExtentManager {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreExtentManager() { }
+    /** The singleton instance of ExtentReports, used to attach reporters and flush the final report. */
     private static ExtentReports extent;
+    /** The default file path where the Extent Report HTML file will be saved. */
     private static final String DEFAULT_REPORT_PATH = getStrProp("REPORT_OUTPUT_DIR")+getStrProp("REPORT_NAME");
+    /** ThreadLocal variable to hold the ExtentTest instance for the current executing test thread. */
     private static final ThreadLocal<ExtentTest> currentTest = new ThreadLocal<>();
+    /** Concurrent map to store class-level ExtentTest nodes, ensuring thread-safe grouping of test methods. */
     private static final Map<String,ExtentTest> classNodeMap = new ConcurrentHashMap<>();
+
     /**
      * <b>Initializes or returns the singleton ExtentReports instance using a custom file path.</b>
      * This method configures the report's theme, title, and system information.

@@ -5,16 +5,18 @@ import org.openqa.selenium.WebElement;
 
 /**
  * Utility class for performing standard Selenium actions while applying a
- * persistent visual highlight (border) to the target element.
- * <p>The highlight remains on the element until a page navigation occurs (DOM reset).
- * All methods are designed to safely catch and handle exceptions (like {@code StaleElementReferenceException}
- * or operation failures) without stopping test execution.</p>
+ * **persistent visual highlight (border)** to the target element.
+ *
+ * <p>This class is primarily used for debugging and demonstration purposes in test automation.
+ * The highlight remains on the element until a page navigation occurs (DOM reset).
+ * All public methods are designed to safely catch and handle exceptions (like {@code StaleElementReferenceException}
+ * or operation failures) without stopping test execution, providing a safe, robust wrapper around core {@link WebElement} operations.</p>
  */
 public class CoreHighlightUtil {
 
     private final WebDriver driver;
     /**
-     * Initializes the Highlight utility with the WebDriver instance.
+     * Initializes the Highlight utility with the active {@link WebDriver} instance.
      *
      * @param driver The active WebDriver instance.
      */
@@ -22,11 +24,14 @@ public class CoreHighlightUtil {
         this.driver = driver;
     }
     /**
-     * Applies a dashed border highlight and scrolls the element into view.
-     * Exceptions are caught and ignored to prevent execution failure.
+     * Applies a dashed border highlight and ensures the element is visible by scrolling it into view.
+     *
+     * <p>This is a private helper method that uses {@link JavascriptExecutor} to modify the element's style.
+     * Exceptions during highlighting (e.g., if the element is stale or non-existent) are caught and logged
+     * to prevent execution failure in the calling method.</p>
      *
      * @param element The {@link WebElement} to highlight.
-     * @param color The border color (e.g., "green", "red").
+     * @param color The border color string (e.g., "green", "red").
      */
     private void applyHighlight(WebElement element, String color) {
         try {
@@ -42,7 +47,8 @@ public class CoreHighlightUtil {
     }
     /**
      * Clicks the specified element after applying a green highlight.
-     * The method catches all exceptions and logs the error, ensuring the test execution does not stop.
+     *
+     * <p>The method wraps the {@code click()} operation, catches all exceptions (including {@code StaleElementReferenceException} and {@code ElementClickInterceptedException}), and logs the error, ensuring the test execution does not stop.</p>
      *
      * @param element The {@link WebElement} to be clicked.
      */
@@ -55,8 +61,9 @@ public class CoreHighlightUtil {
         }
     }
     /**
-     * Clears the element and then enters the specified text after applying a green highlight.
-     * The method catches all exceptions and logs the error, ensuring the test execution does not stop.
+     * Clears the input field and then enters the specified text after applying a green highlight.
+     *
+     * <p>The method catches all exceptions and logs the error, ensuring the test execution does not stop.</p>
      *
      * @param element The input {@link WebElement} to clear and send keys to.
      * @param value The text to be entered into the input field.
@@ -71,9 +78,10 @@ public class CoreHighlightUtil {
         }
     }
     /**
-     * Appends text to the existing text in an input field after applying a green highlight.
-     * This method does not clear the input field first.
-     * The method catches all exceptions and logs the error, ensuring the test execution does not stop.
+     * Appends text to the existing content of an input field after applying a green highlight.
+     * This method skips the {@code clear()} operation.
+     *
+     * <p>The method catches all exceptions and logs the error, ensuring the test execution does not stop.</p>
      *
      * @param element The input {@link WebElement} to append keys to.
      * @param value The text to be appended.
@@ -88,7 +96,8 @@ public class CoreHighlightUtil {
     }
     /**
      * Retrieves the visible text of an element after applying a green highlight.
-     * The method catches all exceptions and returns an empty string, ensuring the test execution does not stop.
+     *
+     * <p>The method catches all exceptions and returns an empty string, ensuring the test execution does not stop.</p>
      *
      * @param element The {@link WebElement} from which to retrieve the text.
      * @return The visible text of the element, or an empty string if the operation fails.
@@ -104,16 +113,17 @@ public class CoreHighlightUtil {
     }
     /**
      * Compares the actual text of an element with an expected value, applying
-     * visual feedback based on the result.
+     * visual feedback based on the comparison result.
      * <ul>
-     * <li>Applies a 'green' border on match.</li>
-     * <li>Applies a 'red' border on mismatch.</li>
+     * <li>Applies a **green** border on match.</li>
+     * <li>Applies a **red** border on mismatch.</li>
      * </ul>
-     * The method catches all exceptions and returns {@code false}, ensuring the test execution does not stop.
+     *
+     * <p>The method catches all exceptions and returns {@code false}, ensuring the test execution does not stop.</p>
      *
      * @param element The {@link WebElement} whose text will be compared.
      * @param expectedText The expected text value.
-     * @return true if the texts match, false otherwise or if the operation fails.
+     * @return {@code true} if the texts match, {@code false} otherwise or if the operation fails.
      */
     public boolean compareText(WebElement element, String expectedText) {
         try {
@@ -127,12 +137,13 @@ public class CoreHighlightUtil {
         }
     }
     /**
-     * Checks if an element is currently displayed on the page.
-     * The method catches all exceptions (including {@code NoSuchElementException} and {@code StaleElementReferenceException})
-     * and returns {@code false}, ensuring the test execution does not stop.
+     * Checks if an element is currently displayed on the page, applying a green highlight if visible.
+     *
+     * <p>The method catches all exceptions (including {@code NoSuchElementException} and {@code StaleElementReferenceException})
+     * and returns {@code false}, ensuring the test execution does not stop. This is a thread-safe way to verify element presence.</p>
      *
      * @param element The {@link WebElement} to check.
-     * @return true if the element is displayed, false if not displayed or the check fails.
+     * @return {@code true} if the element is displayed, {@code false} if not displayed or the check fails due to an exception.
      */
     public boolean isDisplayed(WebElement element) {
         try {
@@ -146,9 +157,10 @@ public class CoreHighlightUtil {
         }
     }
     /**
-     * Scrolls the element into the viewport only if it is not currently in view.
-     * Uses smooth scrolling behavior to center the element.
-     * Exceptions are caught and ignored to prevent execution failure.
+     * Scrolls the element into the viewport using JavaScript's {@code scrollIntoView} method.
+     *
+     * <p>It first checks if the element is already in view before attempting a smooth scroll to the center of the viewport.
+     * Exceptions during scrolling are caught and ignored.</p>
      *
      * @param element The {@link WebElement} to scroll to.
      */
@@ -168,6 +180,7 @@ public class CoreHighlightUtil {
             // Execution continues even if scrolling fails.
         }
     }
+}
 //========================================================================================//
     // Script for blink effect
         /*  js.executeScript(
@@ -198,4 +211,3 @@ public class CoreHighlightUtil {
                 "document.head.appendChild(style);", element, color);
         *//*
     }*/
-}

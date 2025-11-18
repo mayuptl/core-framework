@@ -12,11 +12,14 @@ import static core.config.CoreConfigReader.getStrProp;
  * The default video file extension is set to ".avi".
  */
 public class CoreVideoPathUtil {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreVideoPathUtil() { }
     /**
      * The default folder path where video recordings are expected to be stored.
      * Safely defaults to {@code execution-output/test-recordings/} if the configuration key is missing.
      */
     private static final String DEFAULT_VIDEO_FOLDER = getStrProp("VIDEO_OUTPUT_DIR", "execution-output/test-recordings/");
+    // /** The default file extension used for video recordings (currently {@value #DEFAULT_VIDEO_EXTENSION}). */
     private static final String DEFAULT_VIDEO_EXTENSION = ".avi";
     /**
      * Extracts the file path for the video recording of a test case using the default video folder
@@ -72,7 +75,7 @@ public class CoreVideoPathUtil {
                     Path filepath = Paths.get(file.getAbsolutePath());
                     // file.toUri().toString() correctly handles protocol and slashes for all OS
                     String formattedPath = filepath.toUri().toString();
-                   // String linkText = "Execution Video"; //Execution Video
+                    // String linkText = "Execution Video"; //Execution Video
                     // Return the HTML anchor tag
                     return "<a href=\"" + formattedPath + "\" target=\"_blank\">" + testCaseName + "</a>";
                 }

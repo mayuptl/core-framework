@@ -8,14 +8,17 @@ import static core.config.CoreConfigReader.getStrProp;
 /**
  * Manages the TestRecorder instance to provide thread-safe video recording
  * for test execution.
- *
  * It uses ThreadLocal to ensure that parallel tests each have their own
  * dedicated recorder instance, preventing concurrency issues.
  */
 public class CoreRecorderManager {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreRecorderManager() { }
+    /** The ThreadLocal variable holding the unique CoreTestRecorderUtil instance for the current thread. */
     private static final ThreadLocal<CoreTestRecorderUtil> recorderThread = new ThreadLocal<>();
-    // Default video folder (kept for the factory method)
+    /** The default output directory path for saving video recordings, retrieved from configuration. */
     private static final String DEFAULT_VIDEO_FOLDER = getStrProp("VIDEO_OUTPUT_DIR");
+
     /**
      * Initializes the thread-local recorder with a specific video name and a custom path.
      * The recorder is initialized only once per thread.
@@ -58,7 +61,6 @@ public class CoreRecorderManager {
     }
     /**
      * Removes the TestRecorder instance from the current thread's storage.
-     *
      * This method is **crucial** for cleaning up the thread state after the test finishes
      * to prevent memory leaks and ensure thread reusability.
      */

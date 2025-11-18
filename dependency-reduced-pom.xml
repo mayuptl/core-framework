@@ -4,7 +4,7 @@
   <groupId>org.example</groupId>
   <artifactId>core-framework</artifactId>
   <name>core-framework</name>
-  <version>4.0.88</version>
+  <version>4.0.90</version>
   <url>http://www.example.com</url>
   <build>
     <plugins>
@@ -121,7 +121,6 @@
         <configuration>
           <docfilessubdirs>true</docfilessubdirs>
           <failOnError>false</failOnError>
-          <doclint>none</doclint>
         </configuration>
       </plugin>
       <plugin>

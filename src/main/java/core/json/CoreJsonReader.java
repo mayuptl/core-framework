@@ -15,49 +15,53 @@ import java.util.Map;
 
 /**
  * Utility class for reading test data from JSON files.
- * <p>This class is designed to handle JSON files that contain arrays of test case data.
- * It uses the test case ID (TCID) as the primary key for data retrieval, enabling
- * robust, data-driven test automation.</p>
- * <p>It uses Jackson Databind for mapping JSON content to Java collections,
- * specifically {@code Map<String, String>} for individual data sets.</p>
- * <h3>Key Methods Summary:</h3>
+ *
+ * <p>This class is designed to handle JSON files that contain **arrays of test case data**.<br>
+ * It uses the test case ID (TCID), defined by the property {@code JSON_DATA_TCID_KEY}, as the<br>
+ * primary key for data retrieval, enabling robust, data-driven test automation.</p>
+ *
+ * <p>It relies on **Jackson Databind** for mapping JSON content to Java collections,<br>
+ * primarily using {@code Map<String, String>} for individual data sets.</p>
+ *
+ * <h2>Key Methods Summary:</h2>
  * <ul>
- * <li>{@code getJsonInput}: Retrieves a single, specific data entry based on a given test case name.</li>
- * <li>{@code getJsonInputs}: Useful for executing the same test case logic with multiple different input variations
- * (Data Provider style).</li>
- * <li>{@code readAllJson}: Reads the entire JSON file into a class-level cache
- * ({@code Map<String, Map<String, String>>}) during {@code @BeforeClass} setup for
- * efficient, repeated access in test methods.</li>
+ * <li>{@code getJsonInput}: Retrieves a single, specific data entry based on a given test case name, formatted for a TestNG DataProvider.</li>
+ * <li>{@code getJsonInputs}: Retrieves the entire list of data entries from the JSON array, useful for iterating through all data rows.</li>
+ * <li>{@code readAllJson}: Reads the entire JSON file and indexes the data into a {@code Map<TCID, DataMap>} for efficient lookup by test case name.</li>
  * </ul>
  */
 public class CoreJsonReader {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreJsonReader() { }
     /**
-     * Key used in the JSON data objects to identify the test case name/ID (TCID).
-     * The value for this key (e.g., "testCaseName") is dynamically retrieved
-     * during initialization using the {@code ConfigReader.getStrProp("JSON_DATA_TCID_KEY")}.
-     * This key is mandatory for methods that look up data by test case name,
-     * such as {@code getJsonInput} and {@code readAllJson}.
+     * Key used within the JSON data objects to identify the test case name/ID (TCID).
+     *
+     * <p>The value for this constant is dynamically retrieved from the framework configuration<br>
+     * via {@code CoreConfigReader.getStrProp("JSON_DATA_TCID_KEY")} during class loading.<br>
+     * This key is mandatory for methods that look up data by test case name,<br>
+     * such as {@code getJsonInput} and {@code readAllJson}.</p>
      */
-    //private static final String JSON_DATA_TCID_KEY = "testCaseName";
     private static final String TCID_KEY = CoreConfigReader.getStrProp("JSON_DATA_TCID_KEY");
+
     /**
      * Retrieves the input data for a specific test case ID from a JSON array file.
-     * <p>The method searches the JSON array for a single object where the key defined by {@code JSON_DATA_TCID_KEY}
+     *
+     * <p>The method searches the JSON array for a single object where the key defined by {@code TCID_KEY}<br>
      * matches the provided {@code testCaseName}.</p>
      *
      * @param jsonFilePath The full path to the JSON data file. The JSON must be an array of objects.
      * @param testCaseName The unique ID/Name of the test case to look for (e.g., "TC_001_Login").
-     * @return A {@code Object[][]} containing the single matching data HashMap. This specific
-     * structure (one row, one column) is formatted for **direct use as a TestNG DataProvider**,
+     * @return A {@code Object[][]} containing the single matching data HashMap. This specific<br>
+     * structure (one row, one column) is formatted for **direct use as a TestNG DataProvider**,<br>
      * allowing the data map to be passed as the first argument to the test method.
-     * @throws RuntimeException if the file is not found, cannot be read, the JSON is invalid,
-     * or the specified testCaseName is not found in the data.
+     * @throws RuntimeException if the file is not found, cannot be read, the JSON is invalid,<br>
+     * or the specified {@code testCaseName} is not found in the data, wrapping the original {@link IOException}.
      *
-     * <h3>Example Usage in TestNG (DataProvider Pattern)</h3>
-     * This method is designed to be called from a **DataProvider** which supplies the test method
+     * <h4>Example Usage in TestNG (DataProvider Pattern)</h4>
+     * This method is designed to be called from a **DataProvider** which supplies the test method<br>
      * name (or TCID) via {@code ITestContext} or {@code ITestResult}:
      * <pre>{@code
-     * import core.json.JsonReader;
+     * import core.json.CoreJsonReader;
      * public class LoginTest {
      * // 1. Data Provider calls the static getJsonInput() method
      * @DataProvider(name = "SingleCaseData")
@@ -134,20 +138,22 @@ public class CoreJsonReader {
 
     /**
      * Reads all objects from a JSON array file and returns them as a List of HashMaps.
-     * <p>This method is highly useful for DataProviders that need to iterate through all rows
-     * or a specific subset of rows in the JSON file, as it returns the raw, parsed data
+     *
+     * <p>This method is highly useful for DataProviders that need to iterate through all rows<br>
+     * or a specific subset of rows in the JSON file, as it returns the raw, parsed data<br>
      * structure directly.</p>
      *
      * @param jsonFilePath The full path to the JSON data file. The JSON must be an array of objects.
-     * @return A {@code List<HashMap<String, String>>}, where each HashMap represents
+     * @return A {@code List<HashMap<String, String>>}, where each HashMap represents<br>
      * one test data entry (data row) from the JSON array.
-     * @throws IOException if the JSON content is invalid or a file reading error occurs (e.g., parsing failure after file read).
-     * @throws RuntimeException if the file is not found or cannot be read during the initial file operation.
-     * <h3>Example Usage in a TestNG DataProvider:</h3>
-     * <p>The DataProvider must process the returned {@code List} and convert the selected elements
+     * @throws IOException if a JSON parsing error occurs (e.g., content is invalid JSON).
+     * @throws RuntimeException if the file is not found or cannot be read during the initial file operation, wrapping the {@link IOException}.
+     *
+     * <h4>Example Usage in a TestNG DataProvider:</h4>
+     * <p>The DataProvider must process the returned {@code List} and convert the selected elements<br>
      * into an {@code Object[]} or {@code Object[][]} suitable for TestNG injection.</p>
      * <pre>{@code
-     * import core.json.JsonReader;
+     * import core.json.CoreJsonReader;
      * public class DataDrivenTest {
      * @DataProvider(name = "getAllData")
      * public Object[] getData() throws IOException {
@@ -199,84 +205,85 @@ public class CoreJsonReader {
         return mapper.readValue(jsonCont, new TypeReference<List<HashMap<String, String>>>() {
         });
     }
+
     /**
      * Reads the content of a JSON file, which is expected to contain a JSON array
      * of key-value maps (objects), and transforms it into a Map keyed by a specified
-     * test case ID.
+     * test case ID (TCID).
      *
-     * <p>Each element in the input JSON array must be an object containing the key
-     * defined by {@code TCID_KEY} (e.g., "testCaseName") to be used as the primary
+     * <p>Each element in the input JSON array must be an object containing the key<br>
+     * defined by {@code TCID_KEY} (e.g., "testCaseName") to be used as the primary<br>
      * key in the output map.</p>
      *
-     * <h3>Example Usage in TestNG (Output Consumption)</h3>
-     * The resulting Map is typically loaded once per class and then used in {@code @BeforeMethod}
-     * to fetch the specific data for the currently executing test method name.
-     * <pre>
-     * import core.json.JsonReader;
-     * public class LoginTest {
-     * // Map containing all data keyed by TCID
-     * private static Map&lt;String, Map&lt;String, String&gt;&gt; testData;
-     * // Map for the specific test case's data
-     * private Map &lt;String, String&gt; input;
-     *
-     * {@code @BeforeClass}
-     * public void setupClass() {
-     * String jsonFilePath = "path/to/jsonFile";
-     * testData = JsonReader.readAllJson(jsonFilePath); // Loads all data once
-     * }
-     * {@code @BeforeMethod}
-     * public void setupMethod(ITestResult result) {
-     * // Gets the specific data map based on the test method name
-     * String testCaseName = result.getMethod().getMethodName();
-     * input = testData.get(testCaseName);
-     * }
-     * {@code @Test}
-     * public void Test_001_Login_ValidUser() {
-     * // Test case uses the specific input map
-     * String username = input.get("username");
-     * String password = input.get("password");
-     *  // ... perform actions with username and password
-     * }
-     * }
-     * </pre>
-     * <h3>Example JSON Structure (Input)</h3>
-     * The JSON file content should look like this, where "TestCaseName" is the value
-     * held by the {@code TCID_KEY} constant:
-     * <pre>
-     * [
-     * {
-     * "TestCaseName": "Test_001_Login_ValidUser",
-     * "username": "user123",
-     * "password": "Password1"
-     * },
-     * {
-     * "TestCaseName": "Test_002_Login_InvalidPassword",
-     * "username": "user123",
-     * "password": "wrong password"
-     * }
-     * ]
-     * </pre>
-     * <p>This method utilizes Jackson's {@link ObjectMapper} for parsing and Apache
-     * Commons IO's {@code FileUtils} for reading the file content.</p>
-     *
      * @param jsonFilePath The absolute or relative path to the JSON file to be read.
-     * @return A {@code Map<String, Map<String, String>>} where the outer map's key is
-     * the value of {@code TCID_KEY}, and the inner map
+     * @return A {@code Map<String, Map<String, String>>} where the outer map's key is<br>
+     * the value of {@code TCID_KEY}, and the inner map<br>
      * contains all the key-value pairs from that JSON object.
-     * @throws RuntimeException if an {@link IOException} occurs during file reading
+     * @throws RuntimeException if an {@link IOException} occurs during file reading<br>
      * or JSON parsing, wrapping the original exception for context.
+     *
+     * <h4>Example Usage in TestNG (Output Consumption)</h4>
+     * The resulting Map is typically loaded once per class and then used in {@code @BeforeMethod}<br>
+     * to fetch the specific data for the currently executing test method name.<br>
+     * <pre>
+     * import core.json.CoreJsonReader;<br>
+     * public class LoginTest {<br>
+     * // Map containing all data keyed by TCID<br>
+     * private static Map&lt;String, Map&lt;String, String&gt;&gt; testData;<br>
+     * // Map for the specific test case's data<br>
+     * private Map &lt;String, String&gt; input;<br>
+     *
+     * {@code @BeforeClass}<br>
+     * public void setupClass() {<br>
+     * String jsonFilePath = "path/to/jsonFile";<br>
+     * testData = JsonReader.readAllJson(jsonFilePath); // Loads all data once<br>
+     * }<br>
+     * {@code @BeforeMethod}<br>
+     * public void setupMethod(ITestResult result) {<br>
+     * // Gets the specific data map based on the test method name<br>
+     * String testCaseName = result.getMethod().getMethodName();<br>
+     * input = testData.get(testCaseName);<br>
+     * }<br>
+     * {@code @Test}<br>
+     * public void Test_001_Login_ValidUser() {<br>
+     * // Test case uses the specific input map<br>
+     * String username = input.get("username");<br>
+     * String password = input.get("password");<br>
+     * // ... perform actions with username and password<br>
+     * }<br>
+     * }<br>
+     * </pre>
+     * <h4>Example JSON Structure (Input)</h4>
+     * The JSON file content should look like this, where "TestCaseName" is the value<br>
+     * held by the {@code TCID_KEY} constant:<br>
+     * <pre>
+     * [<br>
+     * {<br>
+     * "TestCaseName": "Test_001_Login_ValidUser",<br>
+     * "username": "user123",<br>
+     * "password": "Password1"<br>
+     * },<br>
+     * {<br>
+     * "TestCaseName": "Test_002_Login_InvalidPassword",<br>
+     * "username": "user123",<br>
+     * "password": "wrong password"<br>
+     * }<br>
+     * ]<br>
+     * </pre>
+     * <p>This method utilizes Jackson's {@link ObjectMapper} for parsing and Apache<br>
+     * Commons IO's {@code FileUtils} for reading the file content.</p>
      */
     public static Map<String, Map<String, String>> readAllJson(String jsonFilePath)
     {
         try
         {
             String jsonContent =
-            FileUtils.readFileToString(new File(jsonFilePath), StandardCharsets.UTF_8);
+                    FileUtils.readFileToString(new File(jsonFilePath), StandardCharsets.UTF_8);
             ObjectMapper mapper = new ObjectMapper();
             //Parse json array into list of map
-           List<Map<String,String>> dataList= mapper.readValue(jsonContent, new TypeReference<List<Map<String,String>>>() {});
+            List<Map<String,String>> dataList= mapper.readValue(jsonContent, new TypeReference<List<Map<String,String>>>() {});
 
-           //Convert List to Map keyed by testCaseName
+            //Convert List to Map keyed by testCaseName
             Map<String,Map<String,String>> result = new HashMap<>();
             for(Map<String,String> entry : dataList) {
                 String testCaseName = entry.get(TCID_KEY);

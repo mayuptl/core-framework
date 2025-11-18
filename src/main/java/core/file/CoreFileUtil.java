@@ -8,6 +8,8 @@ import java.io.IOException;
  * (files and subdirectories) within a specified target folder.</p>
  */
 public class CoreFileUtil {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreFileUtil() { }
     /**
      * Cleans up (deletes all contents from) a specified folder located relative
      * to the user's current working directory (System.getProperty("user.dir")).

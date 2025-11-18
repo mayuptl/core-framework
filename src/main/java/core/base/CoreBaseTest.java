@@ -14,7 +14,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Listeners;
 
 import java.time.Duration;
@@ -24,24 +23,40 @@ import java.util.Map;
 import static core.config.CoreConfigReader.getStrProp;
 
 /**
- * Base utility class for initializing, managing, and tearing down WebDriver instances.
- * This class provides methods to launch the application using different configurations.
+ * Base class for all test classes in the framework.
+ *
+ * <p>It handles the core functionality for **WebDriver initialization, management, and teardown**
+ * in a thread-safe manner using {@code CoreDriverManager}. It supports various browsers,
+ * WebDriverManager automatic setup, manual driver path specification, and parsing of
+ * custom browser options (arguments, preferences, and capabilities).
+ *
+ * <p>It automatically registers {@code ChainTestListener} for test reporting integration.
  */
 @Listeners(ChainTestListener.class)
 public class CoreBaseTest {
     /**
-     * The WebDriver instance for the current test thread.
-     * This field is often synchronized with the driver managed by {@code DriverManager}.
+     * Public default constructor for the base test class.
+     * This allows derived test classes to inherit and instantiate the base class
+     * for direct object creation when necessary.
+     */
+    public CoreBaseTest() {
+        // Initialization logic, if any.
+    }
+    /**
+     * The {@link WebDriver} instance for the current test thread.
+     * This field is a convenience reference to the driver managed by {@code CoreDriverManager}
+     * in the current thread's {@code ThreadLocal} storage.
      */
     public WebDriver driver;
     /**
-     * Initializes the WebDriver, sets implicit waits, and navigates to the starting URL.
-     * <p>
-     * NOTE: This method currently uses hardcoded initialization parameters for demonstration/local testing.
-     * For production test suites, configuration should be loaded dynamically (e.g., from properties).
+     * Utility method to initialize the WebDriver, set implicit waits, and navigate to a starting URL.
+     *
+     * <p>NOTE: This method is typically annotated with {@code @BeforeMethod} or {@code @BeforeClass}
+     * in a standard TestNG setup, but is shown here as a basic implementation demo using
+     * hardcoded parameters.
      */
-   // @BeforeClass
-    public void lunchAppUtil()
+    // @BeforeClass
+    public void lunchAppCore()
     {
         String CUSTOM_OPTIONS = "ARG:--force-device-scale-factor=0.8,ARG:--start-maximized,ARG:--incognito,ARG:--disable-infobars,ARG:--enable-logging=stderr,PREF:download.default_directory=/execution-output/test-downloads/,CAP:acceptInsecureCerts=true";
         String driverPath= "D:\\Work\\Automation\\app-utils\\app-utils\\notes\\msedgedriver.exe";
@@ -54,65 +69,72 @@ public class CoreBaseTest {
     }
 
     /**
-     * Quits the current WebDriver instance and removes it from the ThreadLocal storage
-     * via a single call to the DriverManager utility.
+     * Quits the current {@link WebDriver} instance and removes it from the thread-safe
+     * {@code ThreadLocal} storage managed by {@link CoreDriverManager}.
+     *
+     * <p>It also clears the Log4j {@link ThreadContext} to ensure no context from the current
+     * test thread leaks to the next test.
      */
-  //  @AfterClass
-    public void tearDownAppUtil() {
+    //  @AfterClass
+    public void coreTearDown() {
         CoreDriverManager.quitDriver();
         ThreadContext.clearAll();
     }
     /**
-     * Public method to initialize the driver with user define browser (using WebDriverManager).
+     * Initializes the driver using the specified browser name, relying on
+     * {@link WebDriverManager} to automatically download and configure the driver executable.
      *
-     * @param BrowserName The name of the browser. edge,chrome,firefox etc. (Can include "headless")
-     * @return The initialized WebDriver thread safe instance.
+     * @param BrowserName The name of the browser (e.g., "edge", "chrome", "firefox"). Can include "headless".
+     * @return The initialized, thread-safe {@link WebDriver} instance.
      */
     public WebDriver initDriver(String BrowserName) {
 
         return initDriverCore(BrowserName, "", "");
     }
     /**
-     * Public method to initialize the driver with a manual path.
+     * Initializes the driver using a manually specified path to the driver executable.
      *
-     * @param BrowserName The name of the browser. edge,chrome,firefox etc
-     * @param driverPath The manual path to the driver executable.
-     * @return The initialized WebDriver thread safe instance.
+     * @param BrowserName The name of the browser (e.g., "edge", "chrome", "firefox").
+     * @param driverPath The manual path to the driver executable (e.g., "C:\\drivers\\geckodriver.exe").
+     * @return The initialized, thread-safe {@link WebDriver} instance.
      */
     public WebDriver initDriver(String BrowserName, String driverPath) {
         return initDriverCore(BrowserName, driverPath, "");
     }
     /**
-     * Public method to initialize the driver with user define browser and custom options.
+     * Initializes the driver using {@link WebDriverManager} and applies a custom options string.
      *
-     * @param BrowserName The name of the browser. edge,chrome,firefox etc.
-     * @param customOptions The custom options string ("ARG:...,ARG:...,PREF:...,PREF:...,CAP:...,CAP:...")
-     * @return The initialized WebDriver thread safe instance.
+     * @param BrowserName The name of the browser (e.g., "edge", "chrome", "firefox").
+     * @param customOptions The custom options string containing arguments (ARG:), preferences (PREF:), and capabilities (CAP:).
+     * @return The initialized, thread-safe {@link WebDriver} instance.
      */
     public WebDriver initDriverOptions(String BrowserName, String customOptions) {
         return initDriverCore(BrowserName,"",customOptions );
     }
     /**
-     * Public method to initialize the driver with a manual path and custom options.
+     * Initializes the driver using a manual path and applies a custom options string.
+     * This provides the highest level of customization and explicit control over the driver setup.
      *
-     * @param BrowserName The name of the browser. edge,chrome,firefox etc
+     * @param BrowserName The name of the browser (e.g., "edge", "chrome", "firefox").
      * @param driverPath The manual path to the driver executable.
-     * @param customOptions The custom options string ("ARG:...,ARG:...,PREF:...,PREF:...,CAP:...,CAP:...")
-     * @return The initialized WebDriver thread safe instance.
+     * @param customOptions The custom options string containing arguments (ARG:), preferences (PREF:), and capabilities (CAP:).
+     * @return The initialized, thread-safe {@link WebDriver} instance.
      */
     public WebDriver initDriver(String BrowserName, String driverPath, String customOptions) {
         return initDriverCore(BrowserName, driverPath, customOptions);
     }
     /**
-     * Core method for driver initialization.
-     * It handles WebDriverManager setup, manual driver path configuration,
-     * and parsing of custom options for arguments, preferences, and capabilities.
+     * The core centralized method for configuring and initializing the {@link WebDriver}.
+     *
+     * <p>This method determines the browser type, handles the driver executable path (manual or WDM),
+     * parses the comprehensive custom options string into browser-specific options
+     * (arguments, preferences, capabilities), and stores the result in {@link CoreDriverManager}.
      *
      * @param BrowserName The name of the browser (e.g., "chrome", "edge headless").
-     * @param driverPath The manual path to the driver executable.
-     * @param customOptions Comma-separated string of custom options ("ARG:...,ARG:...,PREF:...,PREF:...,CAP:...,CAP:...")
-     * @return The initialized WebDriver instance.
-     * @throws IllegalArgumentException If the specified browser name is not supported (e.g., "opera").
+     * @param driverPath The manual path to the driver executable (empty string if using WDM).
+     * @param customOptions Comma-separated string of custom options ("ARG:...,PREF:...,CAP:...").
+     * @return The initialized {@link WebDriver} instance.
+     * @throws IllegalArgumentException If the specified {@code BrowserName} is not supported (e.g., "opera").
      */
     private WebDriver initDriverCore(String BrowserName, String driverPath, String customOptions) {
         WebDriver driver;
@@ -162,7 +184,7 @@ public class CoreBaseTest {
             EdgeOptions options = new EdgeOptions();
             if (driverPath != null && !driverPath.isEmpty()) {
                 System.setProperty("webdriver.edge.driver", driverPath);
-               // System.err.println("INFO: Using manual Edge driver path: " + driverPath);
+                // System.err.println("INFO: Using manual Edge driver path: " + driverPath);
             } else {
                 WebDriverManager.edgedriver().setup();
             }
@@ -181,7 +203,7 @@ public class CoreBaseTest {
             ChromeOptions options = new ChromeOptions();
             if (driverPath != null && !driverPath.isEmpty()) {
                 System.setProperty("webdriver.chrome.driver", driverPath);
-               // System.err.println("INFO: Using manual Chrome driver path: " + driverPath);
+                // System.err.println("INFO: Using manual Chrome driver path: " + driverPath);
             } else {
                 WebDriverManager.chromedriver().setup();
             }
@@ -200,7 +222,7 @@ public class CoreBaseTest {
             FirefoxOptions options = new FirefoxOptions();
             if (driverPath != null && !driverPath.isEmpty()) {
                 System.setProperty("webdriver.gecko.driver", driverPath);
-               // System.err.println("INFO: Using manual Firefox driver path: " + driverPath);
+                // System.err.println("INFO: Using manual Firefox driver path: " + driverPath);
             } else {
                 WebDriverManager.firefoxdriver().setup();
             }
@@ -226,7 +248,7 @@ public class CoreBaseTest {
             // Safari driver is managed by the OS and WebDriverManager setup is redundant
             if (driverPath != null && !driverPath.isEmpty()) {
                 System.setProperty("webdriver.safari.driver", driverPath);
-               // System.err.println("INFO: Using manual Safari driver path: " + driverPath);
+                // System.err.println("INFO: Using manual Safari driver path: " + driverPath);
             }
             // Safari does not support traditional command-line arguments like Chrome/Edge
             SafariOptions options = new SafariOptions();
@@ -249,12 +271,12 @@ public class CoreBaseTest {
      * Helper method to apply command-line arguments (ARG:) and general capabilities (CAP:)
      * to the browser options object.
      *
-     * <p>This method dynamically calls {@code addArguments} or {@code setCapability}
-     * based on the concrete implementation of the {@code MutableCapabilities} instance
-     * (e.g., {@code ChromeOptions}, {@code FirefoxOptions}).</p>
+     * <p>This method dynamically applies settings based on the concrete browser options class
+     * (e.g., {@code ChromeOptions}, {@code FirefoxOptions}), which implements
+     * {@code MutableCapabilities}.</p>
      *
-     * @param options The MutableCapabilities instance (e.g., ChromeOptions) to which settings are applied.
-     * @param customOptions The full custom options string used to extract command-line arguments.
+     * @param options The {@link MutableCapabilities} instance (e.g., ChromeOptions) to which settings are applied.
+     * @param customOptions The full custom options string used to extract command-line arguments (ARG:...).
      * @param caps A map of capabilities parsed from the custom options string (CAP:...).
      */
     private void applyOptions(MutableCapabilities options, String customOptions, Map<String, Object> caps)

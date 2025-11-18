@@ -11,7 +11,15 @@ import java.io.IOException;
 import static org.monte.media.FormatKeys.*;
 import static org.monte.media.VideoFormatKeys.*;
 
+/**
+ * Extends {@code ScreenRecorder} to provide customized video file naming
+ * based on the test case name.
+ * <p>
+ * This utility includes a factory method to simplify the configuration and creation
+ * of a screen recording instance with standard settings (e.g., AVI format, 15 FPS).
+ */
 public class CoreTestRecorderUtil extends ScreenRecorder {
+    // /** The name of the test case, used as the prefix for the output video file name. */
     private final String name;
     /**
      * Custom constructor to allow storing the test case name for dynamic file naming.
@@ -33,7 +41,14 @@ public class CoreTestRecorderUtil extends ScreenRecorder {
         super(cfg, captureArea, fileFormat, screenFormat, mouseFormat, audioFormat, movieFolder);
         this.name = name;
     }
-
+    /**
+     * Overrides the base class method to create the video file using the test case name
+     * stored during construction as the filename prefix, followed by the file extension.
+     *
+     * @param fileFormat The desired output file format.
+     * @return The created video file with the custom name.
+     * @throws IOException If the movie folder is not accessible or not a directory.
+     */
     @Override
     protected File createMovieFile(Format fileFormat) throws IOException {
         if (!movieFolder.exists()) {

@@ -25,13 +25,27 @@ import static core.screenshot.CoreScreenshotUtil.getBase64Screenshot;
 /**
  * ExtentLogAttachListeners is the comprehensive listener responsible for:
  * 1. Managing Extent Reports (start, success, failure, skip, finish).
- * 2. Attaching logs retrieved via LogExtractorUtil to every test case (pass/fail).
+ * 2. Attaching logs retrieved via CoreLogFilter to every test case (pass/fail).
  * 3. Attaching a screenshot to the report only on test failure.
  * 4. Ensuring thread-safe reporting via ExtentManager and ThreadLocal.
  */
 public class CoreExtentLogAttachListener implements ITestListener {
+    /**
+     * Public constructor required by TestNG to instantiate this listener class
+     * and hook into the test execution lifecycle events.
+     */
+    public CoreExtentLogAttachListener() { }
+    /** The singleton instance of the ExtentReports object for flushing results. */
     private static final ExtentReports extent = CoreExtentManager.getReportInstance();
 
+    /**
+     * Called when a test method starts.
+     * <p>
+     * Initializes a new thread-local ExtentTest node for the current method,
+     * creates a class node if needed, and attaches method parameters and groups to the report.
+     *
+     * @param result Contains information about the test method being executed.
+     */
     @Override
     public void onTestStart(ITestResult result) {
         String className = result.getTestClass().getRealClass().getSimpleName();
@@ -49,15 +63,30 @@ public class CoreExtentLogAttachListener implements ITestListener {
         }
     }
 
+    /**
+     * Called when a test method succeeds.
+     * <p>
+     * Attaches segmented log content to the report and removes the thread-local test node.
+     *
+     * @param result Contains information about the successfully executed test.
+     */
     @Override
     public void onTestSuccess(ITestResult result) {
         ExtentTest test = CoreExtentManager.getTest();
         String methodName = result.getMethod().getMethodName();
-        /*attachScreenshot(test;*/
+        /*attachScreenshot(test);*/
         attachLogs(test,methodName,result);
         CoreExtentManager.removeTest();
     }
 
+    /**
+     * Called when a test method fails.
+     * <p>
+     * Captures a screenshot, attaches it to the report, extracts and attaches logs,
+     * logs the exception stack trace, and removes the thread-local test node.
+     *
+     * @param result Contains information about the failed test execution.
+     */
     @Override
     public void onTestFailure(ITestResult result) {
         ExtentTest test = CoreExtentManager.getTest();
@@ -67,14 +96,26 @@ public class CoreExtentLogAttachListener implements ITestListener {
         test.fail(result.getThrowable());
         CoreExtentManager.removeTest();
     }
-
+    /**
+     * Called when a test method is skipped.
+     * <p>
+     * Logs the skipped status along with the throwable (if present) and removes the thread-local test node.
+     *
+     * @param result Contains information about the skipped test.
+     */
     @Override
     public void onTestSkipped(ITestResult result) {
         ExtentTest test = CoreExtentManager.getTest();
         test.skip("Test Skipped: " + result.getThrowable());
         CoreExtentManager.removeTest();
     }
-
+    /**
+     * Called when all the tests belonging to the test tag in the XML file have run.
+     * <p>
+     * Flushes the ExtentReports object to write the collected test data to the output file(s).
+     *
+     * @param context The test context (suite or test tag) that has finished execution.
+     */
     @Override
     public void onFinish(ITestContext context) {
         extent.flush();
@@ -103,9 +144,11 @@ public class CoreExtentLogAttachListener implements ITestListener {
     }
     /**
      * Extracts test case logs and attaches them to the Extent Report as formatted HTML.
-     * (NOTE: LogExtractorUtil.toGetTestCaseLogs() must be implemented elsewhere)
+     * It also saves the logs to a dedicated file under the class-level log folder.
+     *
      * @param test The current ExtentTest node.
      * @param methodName The name of the currently executing test method.
+     * @param result The ITestResult to extract class and method names for file saving.
      */
     private void attachLogs(ExtentTest test,String methodName,ITestResult result)  {
         String driverID = getDriverIdFromContext();
@@ -113,10 +156,17 @@ public class CoreExtentLogAttachListener implements ITestListener {
         String styledLogs=
                 "<div style='overflow-x:auto;'><pre style='white-space: pre-wrap; word-break: break-word;'>"
                         + testLogs + "</pre></div>";
-       // test.info(styledLogs);
+        // test.info(styledLogs);
         test.info(MarkupHelper.createCodeBlock(testLogs).getMarkup());
         createClassLevelLogsFolder(testLogs,result);
     }
+    /**
+     * Creates a dedicated folder for the current test class and writes the extracted test logs
+     * to a file named after the test method. This provides persistent access to test logs.
+     *
+     * @param testLogs The log content extracted for the current test method.
+     * @param result The ITestResult object containing class and method names.
+     */
     public void createClassLevelLogsFolder(String testLogs,ITestResult result)
     {
         String className = result.getTestClass().getRealClass().getSimpleName();

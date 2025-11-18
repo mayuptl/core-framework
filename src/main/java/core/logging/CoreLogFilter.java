@@ -18,11 +18,13 @@ import static core.config.CoreConfigReader.getStrProp;
  * This class relies on properties defined in the configuration files (via {@code ConfigReader}).
  */
 public class CoreLogFilter {
-
-    //private static final String DEFAULT_LOG_PATH = getStrProp("DEFAULT_LOG_PATH");
-   // private static final String DEFAULT_LOG_PATH = getStrProp("LOG_FILE_PATH", "execution-output/test-logs/Logs.log");
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreLogFilter() { }
+     /** Directory where log files are stored, configured by "LOG_OUTPUT_DIR". */
     static String logDir = CoreConfigReader.getStrProp("LOG_OUTPUT_DIR");
+    /** The base name of the log file, configured by "LOG_FILE_NAME". */
     static String logFileName= CoreConfigReader.getStrProp("LOG_FILE_NAME");
+/** The default full path to the log file, constructed from logDir and logFileName. */
     private static final String DEFAULT_LOG_PATH = logDir + logFileName;
 
     /**
@@ -134,10 +136,10 @@ public class CoreLogFilter {
             System.err.println("An unexpected error occurred while reading log file: " + filePath + ". Error: " + e.getMessage());
             return "ERROR: Failed to read log file due to IOException: " + e.getMessage();
         } catch (Exception e) {
-        // Catch any unexpected runtime exceptions, e.g., issues with ConfigReader or null pointers
-        System.err.println("An unexpected error occurred in LogExtractorUtil: " + e.getMessage());
-        return "ERROR: An unexpected internal error occurred: " + e.getMessage();
-    }
+            // Catch any unexpected runtime exceptions, e.g., issues with ConfigReader or null pointers
+            System.err.println("An unexpected error occurred in LogExtractorUtil: " + e.getMessage());
+            return "ERROR: An unexpected internal error occurred: " + e.getMessage();
+        }
         return String.join("\n", logs);
     }
 }

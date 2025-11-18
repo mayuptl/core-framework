@@ -10,8 +10,24 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
+// Missing Javadoc for the class: CoreScreenshotUtil
+/**
+ * Utility class for capturing screenshots from the WebDriver instance
+ * and logging them as steps in the Extent Report.
+ * It uses Base64 encoding for efficient embedding of the image data.
+ */
 public class CoreScreenshotUtil
 {
+    /** Private constructor to prevent instantiation of this utility class. */
+    private CoreScreenshotUtil() { /* Private constructor to prevent instantiation */ }
+
+    /**
+     * Captures a screenshot of the current browser view as a Base64 encoded String.
+     * This is a low-level method used internally by {@code stepss}.
+     *
+     * @param driver The active WebDriver instance to take the screenshot from.
+     * @return The screenshot image encoded as a Base64 String.
+     */
     public static String getBase64Screenshot(WebDriver driver) {
         return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BASE64);
     }
@@ -24,13 +40,13 @@ public class CoreScreenshotUtil
      */
     public static void stepss(String stepName)
     {
-       WebDriver driver = CoreDriverManager.getDriver();
-       ExtentTest test = CoreExtentManager.getTest();
-       if(test == null)
-       {
-         //  System.err.println("ExtentTest is null. Did you call stepss() before onTestStart?");
-           return;
-       }
+        WebDriver driver = CoreDriverManager.getDriver();
+        ExtentTest test = CoreExtentManager.getTest();
+        if(test == null)
+        {
+            //  System.err.println("ExtentTest is null. Did you call stepss() before onTestStart?");
+            return;
+        }
         if(driver != null)
         {
             try

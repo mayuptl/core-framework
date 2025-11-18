@@ -7,7 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import static core.wait.CoreWaitUtil.staticWait;
+
+import static core.wait.CoreWaitUtil.sleepMillis;
 
 public class TC01 extends CoreBaseTest {
     @BeforeClass
@@ -31,7 +32,7 @@ public class TC01 extends CoreBaseTest {
         POMTwo pomtwo = new POMTwo(driver);
         log.info("Test case started");
         System.err.println(driver.getCurrentUrl());
-        staticWait(3);
+        sleepMillis(3000);
         CoreScreenshotUtil.stepss("current url");
         pom.logCheck();
         pomtwo.logCheck();

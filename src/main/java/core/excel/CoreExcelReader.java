@@ -10,31 +10,38 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Utility class for reading test data from Excel (.xlsx) files using Apache POI.
+ * Utility class for reading test data from Excel (.xlsx and .xls) files using Apache POI.
  * This class is designed to retrieve data based on a unique test case identifier found
- * in the first column of the specified sheet.
+ * in the first column (index 0) of the specified sheet.
  */
 public class CoreExcelReader {
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreExcelReader() { }
     /**
      * Reads a specific row of test data from an Excel file based on the unique
      * test case identifier found in the first column (index 0) of the sheet.
      *
-     * @param excelFilePath The full path to the Excel (.xlsx) file.
+     * <p>This method automatically handles different cell types (String, Numeric, Boolean, Date, Formula, Blank)
+     * and returns the data as a {@code List<String>}. Data from the first column (the test case ID itself)
+     * is ignored; extraction begins from the second column (index 1).</p>
+     *
+     * <p>On failure (e.g., file not found, test case not found), the method prints the stack trace and returns
+     * an **empty list** ({@code Collections.emptyList()}) to prevent application termination, as per the current implementation.</p>
+     *
+     * @param excelFilePath The full path to the Excel (.xlsx or .xls) file.
      * @param sheetName     The name of the sheet containing the test data.
      * @param testCaseName  The unique ID/Name of the test case to look for in column A.
      * @return A {@link java.util.List} of {@code String} values representing the data cells
-     * from the found row, starting from the second column (index 1).
+     * from the found row, starting from the second column (index 1). Returns an empty list on failure.
      * @throws IOException             If the file cannot be opened, read, or is corrupt.
      * @throws NoSuchElementException  If the sheet or the test case ID is not found.
      * @throws IllegalStateException   If the sheet is found but contains no data rows.
-     * <p>
-     * This is the primary static method for test scripts to retrieve formatted data.
-     * </p>
      *
      * <p><b>Example Data Structure:</b></p>
      * <p><b>Sheet Name: LoginData </b></p>
-     * <p><b>In excel Col A should be test case name or test case id only.</b></p>
+     * <p><b>In Excel Col A should be, test case name or test case id only.</b></p>
      * <table>
+     * <caption>Supported Excel File Types</caption>
      * <thead>
      * <tr>
      * <th>&nbsp;</th>
@@ -118,7 +125,8 @@ public class CoreExcelReader {
      * </tr>
      * </tbody>
      * </table>
-     *  <p><b>Example Usage with TestNG DataProvider:</b></p>
+     *
+     * <p><b>Example Usage with TestNG DataProvider:</b></p>
      *
      * <pre>
      * {@code
@@ -129,14 +137,14 @@ public class CoreExcelReader {
      *
      * @Test(dataProvider = "getData")
      * public void test(List<String> input) {
-     *     System.out.println("Username: " + input.get(0));
-     *     System.out.println("Password: " + input.get(1));
+     * System.out.println("Username: " + input.get(0));
+     * System.out.println("Password: " + input.get(1));
      * }
      * @DataProvider
      * public static Object[][] getData() throws IOException {
-     * 	 List<String> data = excelReader.getTestInput(EXCEL_FILE_PATH, SHEET_NAME, TEST_CASE_ID_Name);
-     *   return new Object [][] {{data}};
-     *   }
+     * List<String> data = excelReader.getTestInput(EXCEL_FILE_PATH, SHEET_NAME, TEST_CASE_ID_Name);
+     * return new Object [][] {{data}};
+     * }
      * }
      * </pre>
      */
@@ -164,13 +172,12 @@ public class CoreExcelReader {
         }
     }
     /**
-     * Iterates through the sheet to find the row matching the test case name in column 0.
-     * Throws an exception if the test case is not found or has no associated data.
+     * Iterates through the sheet's first column (index 0) to find the row matching the test case name.
      *
-     * @param sheet The Excel sheet to search in.
+     * @param sheet The Excel {@link Sheet} object to search within.
      * @param testCaseName The unique test case ID/Name to look for.
-     * @return The {@link Row} object corresponding to the test case.
-     * @throws NoSuchElementException If the test case is not found or is found but contains no data.
+     * @return The {@link Row} object corresponding to the found test case.
+     * @throws NoSuchElementException If the test case is not found, or if the test case is found but has only the ID cell and no subsequent data (column count is 1).
      */
     private Row validateTestCaseExists(Sheet sheet, String testCaseName) {
         boolean flag = false; // used for test case name check
@@ -201,10 +208,11 @@ public class CoreExcelReader {
     }
     /**
      * Extracts all cell data from the given row, starting from the second column (index 1),
-     * and converts it to a List of Strings, handling different cell types appropriately.
+     * and converts it to a List of Strings, handling different cell types appropriately (e.g.,
+     * converting dates and numeric values to their appropriate String representations).
      *
-     * @param row The Excel {@link Row} to process.
-     * @return A {@link List} of {@link String} containing the formatted cell values.
+     * @param row The Excel {@link Row} object to process.
+     * @return A {@link List} of {@link String} containing the formatted cell values starting from column B.
      */
     private List<String> extractRowData(Row row) {
         List<String> inputDataList = new ArrayList<>();

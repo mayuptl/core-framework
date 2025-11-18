@@ -7,17 +7,15 @@ import org.openqa.selenium.WebDriver;
  * which is essential for safe and reliable parallel test execution.
  */
 public class CoreDriverManager {
-
-    // ThreadLocal variable to store the WebDriver instance for the current thread.
-    // This provides the necessary isolation for parallel execution.
+    /** The ThreadLocal variable holding the WebDriver instance unique to the current thread. */
     private static final ThreadLocal<WebDriver> threadLocalDriver = new ThreadLocal<>();
-    // Private constructor to prevent external instantiation of this utility class.
+    /** Private constructor to prevent external instantiation of this utility class. */
     private CoreDriverManager() {
         // Utility class: all methods are static.
     }
     /**
      * Retrieves the WebDriver instance associated with the current thread.
-     * * @return The WebDriver instance for the current thread.
+     * @return The WebDriver instance for the current thread.
      * @throws IllegalStateException if no driver is currently set for the thread.
      */
     public static WebDriver getDriver()
@@ -33,7 +31,7 @@ public class CoreDriverManager {
     /**
      * Associates a WebDriver instance with the current thread.
      * This is called by TestBaseAppUtil after successfully creating the driver.
-     * * @param driver The WebDriver instance to set.
+     * @param driver The WebDriver instance to set.
      */
     public static void setDriver(WebDriver driver)
     {
