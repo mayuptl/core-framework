@@ -52,9 +52,11 @@ public class CoreHighlightUtil {
     {
         // The driver, properties, and color extraction logic are correct.
         WebDriver driver = CoreDriverManager.getDriver();
-        int changeMillis = getIntProp("STYLE_CHANGE_IN_MILLIS");
+//        int changeMillis =Integer.parseInt(getStrProp("STYLE_CHANGE_IN_MILLIS"));
+//        int cleanupDelayMs = Integer.parseInt(getStrProp("CLEANUP_DELAY_IN_MILLIS"));
+        int changeMillis =getIntProp("STYLE_CHANGE_IN_MILLIS");
         int cleanupDelayMs = getIntProp("CLEANUP_DELAY_IN_MILLIS");
-
+        //"        elem.style.boxShadow = '0 0 10px #FFD700';" +
         String shadowColor = "#FF0000"; // Default color in case initialStyle is malformed
         // --- Color Extraction Logic (Corrected for robustness) ---
         // Ensure initialStyle is not null and is processed.
@@ -67,48 +69,43 @@ public class CoreHighlightUtil {
             }
         }
         try {
+          //  System.out.println(shadowColor);
             JavascriptExecutor js = (JavascriptExecutor) driver;
             String script =
                     "var elem = arguments[0];" +
-                            "var initStyle = arguments[1];" +
-                            "var finalStyle = arguments[2];" +
-                            "var changeDelay = arguments[3];" +
-                            "var cleanupDelay = arguments[4];" +
+                    "var initStyle = arguments[1];" +
+                    "var finalStyle = arguments[2];" +
+                    "var changeDelay = arguments[3];" +
+                    "var cleanupDelay = arguments[4];" +
+                    "try {" +
+                    "    if (elem && elem.style){" +
+                    "        elem.style.border = initStyle;" +
+                    "        elem.style.boxShadow = '0 0 10px "+ shadowColor +"';" +
+                    "    }" +
+                    "    setTimeout(function() {" +
+                    "       try {" +
+                    "           if(elem && elem.style) {" +
+                    "               elem.style.border = finalStyle;" +
+                    "               elem.style.boxShadow = 'none';" +
+                    "           }" +
+                    "       } catch(e) {  }" + //console.warn('Error applying final style', e);
+                    "    }, changeDelay);" +
+                    "    setTimeout(function() {" +
+                    "       try{" +
+                    "           if(elem && elem.style) {" +
+                    "               elem.style.border = 'none';" +
+                    "               elem.style.boxShadow = 'none';" +
+                    "           }" +
+                    "       } catch(e) {  }" + //console.warn('Error during cleanup', e);
+                    "    }, cleanupDelay);" +
 
-                            "try {" +
-                            "    if (elem && elem.style){" +
-                            "        // 1. Apply initial border and the extracted box shadow (glow effect)." +
-                            "        elem.style.border = initStyle;" +
-                            "        elem.style.boxShadow = '0 0 10px " + shadowColor + "';" +
-                            "    }" +
-
-                            "    setTimeout(function() {" +
-                            "       try{" +
-                            "           if(elem && elem.style) {" +
-                            "               // 2. Apply the 'final' border and remove the shadow (first cleanup phase)." +
-                            "               elem.style.border = finalStyle;" +
-                            "               elem.style.boxShadow = 'none';" +
-                            "           }" +
-                            "       } catch(e) { console.warn('Error applying final style', e); }" +
-                            "    }, changeDelay);" +
-                            "    // This timeout runs after the first one and cleans up to 'none' for border." +
-                            "    setTimeout(function() {" +
-                            "       try{" +
-                            "           if(elem && elem.style) {" +
-                            "               // 3. Final cleanup: remove all residual styles (border and shadow)." +
-                            "               elem.style.border = 'none';" +
-                            "               elem.style.boxShadow = 'none';" +
-                            "           }" +
-                            "       } catch(e) { console.warn('Error during cleanup', e); }" +
-                            "    }, cleanupDelay);" +
-
-                            "}  catch(e) { console.error('Highlight script failed', e); }";
+                            "}  catch(e) {  }"; //console.error('Highlight script failed', e);
 
             js.executeScript(script, element, initialStyle, finalStyle, changeMillis, cleanupDelayMs);
 
         } catch (Exception e)
         {
-            System.err.println("Highlight failed for element: " + element +". Error: " + e.getMessage());
+            //System.err.println("Highlight failed for element: " + element +". Error: " + e.getMessage());
         }
     }
     /**
