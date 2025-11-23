@@ -47,7 +47,7 @@ public class CoreBaseTest {
      * This field is a convenience reference to the driver managed by {@code CoreDriverManager}
      * in the current thread's {@code ThreadLocal} storage.
      */
-    public WebDriver driver;
+    protected WebDriver driver;
     /**
      * Utility method to initialize the WebDriver, set implicit waits, and navigate to a starting URL.
      *
