@@ -148,7 +148,7 @@ public class CoreExcelReader {
      * }
      * </pre>
      */
-    public List<String> getTestInput(String excelFilePath, String sheetName, String testCaseName) throws IOException
+    public static List<String> getTestInput(String excelFilePath, String sheetName, String testCaseName) throws IOException
     {
         try (FileInputStream fis = new FileInputStream(excelFilePath);
              Workbook workbook = excelFilePath.endsWith(".xlsx") ? new XSSFWorkbook(fis) : new HSSFWorkbook(fis)) {
@@ -179,7 +179,7 @@ public class CoreExcelReader {
      * @return The {@link Row} object corresponding to the found test case.
      * @throws NoSuchElementException If the test case is not found, or if the test case is found but has only the ID cell and no subsequent data (column count is 1).
      */
-    private Row validateTestCaseExists(Sheet sheet, String testCaseName) {
+    private static Row validateTestCaseExists(Sheet sheet, String testCaseName) {
         boolean flag = false; // used for test case name check
         int cellCount = 0;
         int totalRows = sheet.getLastRowNum();
@@ -214,7 +214,7 @@ public class CoreExcelReader {
      * @param row The Excel {@link Row} object to process.
      * @return A {@link List} of {@link String} containing the formatted cell values starting from column B.
      */
-    private List<String> extractRowData(Row row) {
+    private static List<String> extractRowData(Row row) {
         List<String> inputDataList = new ArrayList<>();
         int cellCount = row.getLastCellNum();
         cellCount--;
