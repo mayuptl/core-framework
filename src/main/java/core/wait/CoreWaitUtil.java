@@ -1,4 +1,5 @@
 package core.wait;
+import managers.CoreDriverManager;
 import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -14,22 +15,18 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class CoreWaitUtil {
      /** The WebDriver instance associated with this WaitUtil object. */
-    private final WebDriver driver;
-    /**
-     * Constructs a WaitUtil instance.
-     * @param driver The WebDriver instance to use for all wait operations.
-     */
-    public CoreWaitUtil(WebDriver driver)
-    {
-        this.driver = driver;
-    }
+    //private final WebDriver driver;
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreWaitUtil()
+    {    }
     /**
      * Creates a WebDriverWait instance with the specified timeout duration.
      *
      * @param timeOutInSec The maximum time in seconds to wait for a condition.
      * @return A configured WebDriverWait instance.
      */
-    private WebDriverWait getWait(int timeOutInSec) {
+    private static WebDriverWait getWait(int timeOutInSec) {
+        WebDriver driver = CoreDriverManager.getDriver();
         return new WebDriverWait(driver, Duration.ofSeconds(timeOutInSec));
     }
 
@@ -46,7 +43,7 @@ public class CoreWaitUtil {
      * @param seconds The number of seconds the current thread should sleep.
      * @since 1.0
      */
-    public static void sleepSeconds(int seconds)
+    public static void threadSleepSec(int seconds)
     {
         LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(seconds));
     }
@@ -63,7 +60,7 @@ public class CoreWaitUtil {
      * @param milliseconds The number of milliseconds the current thread should sleep.
      * @since 1.0
      */
-    public static void sleepMillis(int milliseconds)
+    public static void threadSleep(int milliseconds)
     {
         // Convert milliseconds to nanoseconds before passing to LockSupport.parkNanos()
         LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(milliseconds));
@@ -75,7 +72,7 @@ public class CoreWaitUtil {
      * @param element The WebElement to wait for visibility.
      * @return The visible WebElement.
      */
-    public WebElement waitForVisibilityOf(int timeOutInSec, WebElement element) {
+    public static WebElement waitForVisibilityOf(int timeOutInSec, WebElement element) {
         return getWait(timeOutInSec).until(ExpectedConditions.visibilityOf(element));
     }
     /**
@@ -85,7 +82,7 @@ public class CoreWaitUtil {
      * @param locator The {@link By} locator of the element.
      * @return The visible WebElement.
      */
-    public WebElement waitForVisibilityOfLocated(int timeOutInSec, By locator) {
+    public static WebElement waitForVisibilityOfLocated(int timeOutInSec, By locator) {
         return getWait(timeOutInSec).until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
     /**
@@ -95,7 +92,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param elements The List of WebElements to wait for.
      */
-    public void waitForVisibilityOfAll(int timeOutInSec, List<WebElement> elements) {
+    public static void waitForVisibilityOfAll(int timeOutInSec, List<WebElement> elements) {
         getWait(timeOutInSec).until(ExpectedConditions.visibilityOfAllElements(elements));
     }
     /**
@@ -107,7 +104,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param elements The List of WebElements to check.
      */
-    public void waitForVisibilityOfAtLeastOne(int timeOutInSec, List<WebElement> elements) {
+    public static void waitForVisibilityOfAtLeastOne(int timeOutInSec, List<WebElement> elements) {
         getWait(timeOutInSec).until(d -> {
             try {
                 return elements.stream().anyMatch(WebElement::isDisplayed);
@@ -123,7 +120,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param element The WebElement to wait for invisibility.
      */
-    public void waitForInVisibilityOf(int timeOutInSec, WebElement element) {
+    public static void waitForInVisibilityOf(int timeOutInSec, WebElement element) {
         getWait(timeOutInSec).until(ExpectedConditions.invisibilityOf(element));
     }
     /**
@@ -133,7 +130,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait for each element.
      * @param elements The List of WebElements to wait for invisibility.
      */
-    public void waitForInVisibilityOfAll(int timeOutInSec, List<WebElement> elements) {
+    public static void waitForInVisibilityOfAll(int timeOutInSec, List<WebElement> elements) {
         for (WebElement element : elements) {
             try {
                 getWait(timeOutInSec).until(ExpectedConditions.invisibilityOf(element));
@@ -150,7 +147,7 @@ public class CoreWaitUtil {
      * @param element      The WebElement to wait for clickability.
      * @return The WebElement after it has been determined to be clickable.
      */
-    public @Nullable WebElement waitForToBeClickable(int timeOutInSec, WebElement element) {
+    public static @Nullable WebElement waitForToBeClickable(int timeOutInSec, WebElement element) {
         return getWait(timeOutInSec).until(ExpectedConditions.elementToBeClickable(element));
     }
     /**
@@ -162,7 +159,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait for each element.
      * @param elements The List of WebElements to wait for clickability.
      */
-    public void waitForToBeClickableAll(int timeOutInSec, List<WebElement> elements) {
+    public static void waitForToBeClickableAll(int timeOutInSec, List<WebElement> elements) {
         for (WebElement element : elements) {
             getWait(timeOutInSec).until(ExpectedConditions.elementToBeClickable(element));
         }
@@ -173,7 +170,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param url The URL fragment expected in the current URL.
      */
-    public void waitForUrlToBe(int timeOutInSec, String url)
+    public static void waitForUrlToBe(int timeOutInSec, String url)
     {
         getWait(timeOutInSec).until(ExpectedConditions.urlContains(url));
     }
@@ -184,7 +181,7 @@ public class CoreWaitUtil {
      * @param element The WebElement to check for text.
      * @param text The exact text expected to be present.
      */
-    public void waitForTextToBePresentIn(int timeOutInSec, WebElement element, String text) {
+    public static void waitForTextToBePresentIn(int timeOutInSec, WebElement element, String text) {
         getWait(timeOutInSec).until(ExpectedConditions.textToBePresentInElement(element, text));
     }
     /**
@@ -192,7 +189,7 @@ public class CoreWaitUtil {
      *
      * @param timeOutInSec The maximum time in seconds to wait.
      */
-    public void waitForAlert(int timeOutInSec) {
+    public static void waitForAlert(int timeOutInSec) {
         getWait(timeOutInSec).until(ExpectedConditions.alertIsPresent());
     }
     /**
@@ -201,7 +198,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param title The text fragment expected in the page title.
      */
-    public void waitForTitleContains(int timeOutInSec, String title) {
+    public static void waitForTitleContains(int timeOutInSec, String title) {
         getWait(timeOutInSec).until(ExpectedConditions.titleContains(title));
     }
     /**
@@ -210,7 +207,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @param urlFragment The URL fragment expected to be present.
      */
-    public void waitForUrlContains(int timeOutInSec, String urlFragment) {
+    public static void waitForUrlContains(int timeOutInSec, String urlFragment) {
         getWait(timeOutInSec).until(ExpectedConditions.urlContains(urlFragment));
     }
     /**
@@ -221,7 +218,7 @@ public class CoreWaitUtil {
      * @param attribute The name of the attribute (e.g., "class", "value").
      * @param value The expected value of the attribute.
      */
-    public void waitForAttributeToBe(int timeOutInSec, WebElement element, String attribute, String value) {
+    public static void waitForAttributeToBe(int timeOutInSec, WebElement element, String attribute, String value) {
         getWait(timeOutInSec).until(ExpectedConditions.attributeToBe(element, attribute, value));
     }
     /**
@@ -230,7 +227,7 @@ public class CoreWaitUtil {
      * @param timeOutInSec The maximum time in seconds to wait.
      * @return {@code true} if the page loads successfully, {@code false} otherwise.
      */
-    public boolean waitForPageLoad(int timeOutInSec)
+    public static boolean waitForPageLoad(int timeOutInSec)
     {
         try {
             // Add a custom message to the TimeoutException for better debugging
@@ -241,11 +238,11 @@ public class CoreWaitUtil {
             return true; // Return true on success
         } catch (TimeoutException e) {
             // Log a specific message for the expected timeout
-            System.out.println("Page did not load within " + timeOutInSec + " seconds. TimeoutException: " + e.getMessage());
+            System.err.println("Page did not load within " + timeOutInSec + " seconds. TimeoutException: " + e.getMessage());
             return false; // Return false on failure
         } catch (Exception e) {
             // Catch any other unexpected exceptions (e.g., driver issues)
-            System.out.println("An unexpected error occurred while waiting for page load: " + e.getMessage());
+            System.err.println("An unexpected error occurred while waiting for page load: " + e.getMessage());
             return false; // Return false for unexpected errors
         }
     }
@@ -296,8 +293,9 @@ public class CoreWaitUtil {
      * @param timeoutInSec The total timeout in seconds.
      * @param pollingMillis The polling interval in milliseconds.
      */
-    public void fluentWaitForVisibility(WebElement element, int timeoutInSec, int pollingMillis)
+    public static void fluentWaitForVisibility(WebElement element, int timeoutInSec, int pollingMillis)
     {
+        WebDriver driver = CoreDriverManager.getDriver();
         new WebDriverWait(driver, Duration.ofSeconds(timeoutInSec))
                 .pollingEvery(Duration.ofMillis(pollingMillis))
                 .ignoring(NoSuchElementException.class)
@@ -312,7 +310,8 @@ public class CoreWaitUtil {
      * @param timeoutInSec The total timeout in seconds.
      * @param pollingMillis The polling interval in milliseconds.
      */
-    public void fluentWaitForInvisibility(WebElement element, int timeoutInSec, int pollingMillis) {
+    public static void fluentWaitForInvisibility(WebElement element, int timeoutInSec, int pollingMillis) {
+        WebDriver driver = CoreDriverManager.getDriver();
         new WebDriverWait(driver, Duration.ofSeconds(timeoutInSec))
                 .pollingEvery(Duration.ofMillis(pollingMillis))
                 .ignoring(NoSuchElementException.class)
