@@ -30,10 +30,10 @@ public class CoreFrameworkExecutionListener implements IExecutionListener {
     {
         try{
             CoreFrameworkInitializer.init();
-            System.out.println("INFO: core-framework code initialization successful.");
+            System.out.println("[INFO] Core-framework code initialization successful.");
         } catch (IOException e) {
             Logger log = LogManager.getLogger("FrameworksExecutionListener");
-            log.error("FATAL: core-framework code initialization failed during onExecutionStart.");
+            log.error("[FATAL] Core-framework code initialization failed during onExecutionStart.");
         }
     }
     /**

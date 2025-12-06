@@ -41,10 +41,10 @@ final class CoreConfigLoaderUtils {
                     CACHED_PROPS.load(defaultsStream);
                     break;
                 } else {
-                    System.err.println("WARNING: " + jarPropFilePath + " is not found inside JAR (attempt " + (i + 1) + ")");
+                    System.err.println("[WARNING] " + jarPropFilePath + " is not found inside JAR (attempt " + (i + 1) + ")");
                 }
             } catch (IOException e) {
-                System.err.println("WARNING: Failed to load " + jarPropFilePath + " from inside JAR (attempt " + (i + 1) + ")");
+                System.err.println("[WARNING] Failed to load " + jarPropFilePath + " from inside JAR (attempt " + (i + 1) + ")");
             } finally {
                 // The original code does not explicitly close the stream here, but a real application
                 // should typically manage resource closure carefully.
@@ -80,7 +80,7 @@ final class CoreConfigLoaderUtils {
                 CACHED_PROPS.putAll(overrideProps);
             }
         } catch (IOException e) {
-            System.out.println("INFO: Using default values because no config.properties file found or no keys matched with JAR's core-config.properties file keys");
+            System.out.println("[INFO] Using default values because no config.properties file found or no keys matched with JAR's core-config.properties file keys");
         }
     }
 
@@ -116,7 +116,7 @@ final class CoreConfigLoaderUtils {
                 }
             }
         } catch (IOException e) {
-            System.err.println("ERROR: Failed to load consumer chaintest-related properties: " + e.getMessage());
+            System.err.println("[ERROR] Failed to load consumer chaintest-related properties: " + e.getMessage());
         }
     }
 
@@ -182,7 +182,7 @@ final class CoreConfigLoaderUtils {
         final int KEY_WIDTH = 30;
         final int VALUE_WIDTH = 40;
 
-        System.out.println("INFO: User's config.properties overrides JAR's defaults. See log file for full details.");
+        System.out.println("[INFO] User's config.properties overrides JAR's defaults. See log file for full details.");
 
         StringBuilder tableBuilder = new StringBuilder();
         final String ROW_FORMAT = "%-" + KEY_WIDTH + "s | %-" + VALUE_WIDTH + "s | %-" + VALUE_WIDTH + "s %n";
