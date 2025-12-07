@@ -61,7 +61,7 @@ public class CoreJsonReader {
      * This method is designed to be called from a **DataProvider** which supplies the test method<br>
      * name (or TCID) via {@code ITestContext} or {@code ITestResult}:
      * <pre>{@code
-     * import core.json.CoreJsonReader;
+     * import static core.json.CoreJsonReader.*;
      * public class LoginTest {
      * // 1. Data Provider calls the static getJsonInput() method
      * @DataProvider(name = "SingleCaseData")
@@ -153,7 +153,7 @@ public class CoreJsonReader {
      * <p>The DataProvider must process the returned {@code List} and convert the selected elements<br>
      * into an {@code Object[]} or {@code Object[][]} suitable for TestNG injection.</p>
      * <pre>{@code
-     * import core.json.CoreJsonReader;
+     * import static core.json.CoreJsonReader.*;
      * public class DataDrivenTest {
      * @DataProvider(name = "getAllData")
      * public Object[] getData() throws IOException {
@@ -226,7 +226,7 @@ public class CoreJsonReader {
      * The resulting Map is typically loaded once per class and then used in {@code @BeforeMethod}<br>
      * to fetch the specific data for the currently executing test method name.<br>
      * <pre>
-     * import core.json.CoreJsonReader;<br>
+     * import static core.json.CoreJsonReader.*;<br>
      * public class LoginTest {<br>
      * // Map containing all data keyed by TCID<br>
      * private static Map&lt;String, Map&lt;String, String&gt;&gt; testData;<br>

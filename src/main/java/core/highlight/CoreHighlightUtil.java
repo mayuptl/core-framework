@@ -1,7 +1,13 @@
 package core.highlight;
+import managers.CoreDriverManager;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.sql.DriverManager;
+
+import static core.config.CoreConfigReader.getIntProp;
+import static core.config.CoreConfigReader.getStrProp;
 
 /**
  * Utility class for performing standard Selenium actions while applying a
@@ -14,15 +20,9 @@ import org.openqa.selenium.WebElement;
  */
 public class CoreHighlightUtil {
 
-    private final WebDriver driver;
-    /**
-     * Initializes the Highlight utility with the active {@link WebDriver} instance.
-     *
-     * @param driver The active WebDriver instance.
-     */
-    public CoreHighlightUtil(WebDriver driver) {
-        this.driver = driver;
-    }
+    //private final WebDriver driver;
+    /** Private constructor for a utility class; all methods are static. */
+    private CoreHighlightUtil() { }
     /**
      * Applies a dashed border highlight and ensures the element is visible by scrolling it into view.
      *
@@ -31,18 +31,81 @@ public class CoreHighlightUtil {
      * to prevent execution failure in the calling method.</p>
      *
      * @param element The {@link WebElement} to highlight.
-     * @param color The border color string (e.g., "green", "red").
+     * @param initialStyle The initial border color string
+     * @param finalStyle The final border color string
      */
-    private void applyHighlight(WebElement element, String color) {
+//    private static void applyHighlight(WebElement element, String color) {
+//        WebDriver driver = CoreDriverManager.getDriver();
+//        try {
+//            scrollTo(element);
+//            JavascriptExecutor js = (JavascriptExecutor) driver;
+//            // Script for highlight: 3px dashed border of the specified color.
+//            String script = "arguments[0].style.border='3px dashed "+color+"'";
+//            js.executeScript(script, element);
+//        } catch (Exception e) {
+//            System.err.println("Highlighting failed for element: " + element + ". Error: " + e.getMessage());
+//            // Execution continues even if highlighting fails.
+//        }
+//    }
+
+    private static void applyHighlight(WebElement element, String initialStyle, String finalStyle)
+    {
+        // The driver, properties, and color extraction logic are correct.
+        WebDriver driver = CoreDriverManager.getDriver();
+//        int changeMillis =Integer.parseInt(getStrProp("STYLE_CHANGE_IN_MILLIS"));
+//        int cleanupDelayMs = Integer.parseInt(getStrProp("CLEANUP_DELAY_IN_MILLIS"));
+        int changeMillis =getIntProp("STYLE_CHANGE_IN_MILLIS");
+        int cleanupDelayMs = getIntProp("CLEANUP_DELAY_IN_MILLIS");
+        //"        elem.style.boxShadow = '0 0 10px #FFD700';" +
+        String shadowColor = "#FF0000"; // Default color in case initialStyle is malformed
+        // --- Color Extraction Logic (Corrected for robustness) ---
+        // Ensure initialStyle is not null and is processed.
+        if (initialStyle != null && !initialStyle.trim().isEmpty()) {
+            String[] parts = initialStyle.trim().split("\\s+");
+            // We assume the format has at least three parts: width, style, and color.
+            if (parts.length >= 3) {
+                // The color is always the last element in the resulting array.
+                shadowColor = parts[parts.length - 1];
+            }
+        }
         try {
-            scrollTo(element);
+          //  System.out.println(shadowColor);
             JavascriptExecutor js = (JavascriptExecutor) driver;
-            // Script for highlight: 3px dashed border of the specified color.
-            String script = "arguments[0].style.border='3px dashed "+color+"'";
-            js.executeScript(script, element);
-        } catch (Exception e) {
-            System.err.println("Highlighting failed for element: " + element + ". Error: " + e.getMessage());
-            // Execution continues even if highlighting fails.
+            String script =
+                    "var elem = arguments[0];" +
+                    "var initStyle = arguments[1];" +
+                    "var finalStyle = arguments[2];" +
+                    "var changeDelay = arguments[3];" +
+                    "var cleanupDelay = arguments[4];" +
+                    "try {" +
+                    "    if (elem && elem.style){" +
+                    "        elem.style.border = initStyle;" +
+                    "        elem.style.boxShadow = '0 0 10px "+ shadowColor +"';" +
+                    "    }" +
+                    "    setTimeout(function() {" +
+                    "       try {" +
+                    "           if(elem && elem.style) {" +
+                    "               elem.style.border = finalStyle;" +
+                    "               elem.style.boxShadow = 'none';" +
+                    "           }" +
+                    "       } catch(e) {  }" + //console.warn('Error applying final style', e);
+                    "    }, changeDelay);" +
+                    "    setTimeout(function() {" +
+                    "       try{" +
+                    "           if(elem && elem.style) {" +
+                    "               elem.style.border = 'none';" +
+                    "               elem.style.boxShadow = 'none';" +
+                    "           }" +
+                    "       } catch(e) {  }" + //console.warn('Error during cleanup', e);
+                    "    }, cleanupDelay);" +
+
+                            "}  catch(e) {  }"; //console.error('Highlight script failed', e);
+
+            js.executeScript(script, element, initialStyle, finalStyle, changeMillis, cleanupDelayMs);
+
+        } catch (Exception e)
+        {
+            //System.err.println("Highlight failed for element: " + element +". Error: " + e.getMessage());
         }
     }
     /**
@@ -52,9 +115,9 @@ public class CoreHighlightUtil {
      *
      * @param element The {@link WebElement} to be clicked.
      */
-    public void click(WebElement element) {
+    public static void click(WebElement element) {
         try {
-            applyHighlight(element, "green");
+            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
             element.click();
         } catch (Exception e) {
             System.err.println("Click failed for element: " + element + ". Error: " + e.getMessage());
@@ -68,9 +131,9 @@ public class CoreHighlightUtil {
      * @param element The input {@link WebElement} to clear and send keys to.
      * @param value The text to be entered into the input field.
      */
-    public void sendKeys(WebElement element, String value) {
+    public static void sendKeys(WebElement element, String value) {
         try {
-            applyHighlight(element, "green");
+            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
             element.clear();
             element.sendKeys(value);
         } catch (Exception e) {
@@ -86,9 +149,9 @@ public class CoreHighlightUtil {
      * @param element The input {@link WebElement} to append keys to.
      * @param value The text to be appended.
      */
-    public void sendKeysAppend(WebElement element, String value) {
+    public static void sendKeysAppend(WebElement element, String value) {
         try {
-            applyHighlight(element, "green");
+            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
             element.sendKeys(value);
         } catch (Exception e) {
             System.err.println("SendKeysAppend failed for element: " + element + ". Error: " + e.getMessage());
@@ -102,9 +165,9 @@ public class CoreHighlightUtil {
      * @param element The {@link WebElement} from which to retrieve the text.
      * @return The visible text of the element, or an empty string if the operation fails.
      */
-    public String getText(WebElement element) {
+    public static String getText(WebElement element) {
         try {
-            applyHighlight(element, "green");
+            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
             return element.getText();
         } catch (Exception e) {
             System.err.println("GetText failed for element: " + element + ". Error: " + e.getMessage());
@@ -125,12 +188,18 @@ public class CoreHighlightUtil {
      * @param expectedText The expected text value.
      * @return {@code true} if the texts match, {@code false} otherwise or if the operation fails.
      */
-    public boolean compareText(WebElement element, String expectedText) {
+    public static boolean compareText(WebElement element, String expectedText) {
         try {
             String actualText = element.getText();
             boolean match = expectedText.equals(actualText);
-            applyHighlight(element, match ? "green" : "red");
-            return match;
+            if(match)
+            {
+                applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+                return match;
+            }else {
+                applyHighlight(element, getStrProp("RED_BORDER_STYLE"),getStrProp("RED_BORDER_STYLE"));
+                return match;
+            }
         } catch (Exception e) {
             System.err.println("CompareText failed for element: " + element + ". Error: " + e.getMessage());
             return false; // Safe return value
@@ -145,10 +214,10 @@ public class CoreHighlightUtil {
      * @param element The {@link WebElement} to check.
      * @return {@code true} if the element is displayed, {@code false} if not displayed or the check fails due to an exception.
      */
-    public boolean isDisplayed(WebElement element) {
+    public static boolean isDisplayed(WebElement element) {
         try {
             boolean displayed = element.isDisplayed();
-            if (displayed) applyHighlight(element, "green");
+            if (displayed) applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
             return displayed;
         } catch (Exception e) {
             System.err.println("IsDisplayed check failed for element: " + element + ". Error: " + e.getMessage());
@@ -164,7 +233,8 @@ public class CoreHighlightUtil {
      *
      * @param element The {@link WebElement} to scroll to.
      */
-    public void scrollTo(WebElement element) {
+    public static void scrollTo(WebElement element) {
+        WebDriver driver = CoreDriverManager.getDriver();
         try {
             JavascriptExecutor js = (JavascriptExecutor) driver;
             // Check if the element is in the viewport

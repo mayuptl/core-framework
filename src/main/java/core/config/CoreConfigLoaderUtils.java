@@ -16,7 +16,7 @@ import java.util.Map.Entry;
  * mechanics for the two-stage configuration loading process: JAR defaults followed
  * by consumer overrides.
  */
-public final class CoreConfigLoaderUtils {
+final class CoreConfigLoaderUtils {
 
     /**
      * Prevents instantiation of this utility class.
@@ -30,7 +30,7 @@ public final class CoreConfigLoaderUtils {
      * @param CACHED_PROPS The {@link Properties} object to load the defaults into.
      * @param jarPropFilePath The path to the properties file inside the JAR (e.g., "/core-config.properties").
      */
-    public static void loadJarProp(Properties CACHED_PROPS, String jarPropFilePath) {
+    static void loadJarProp(Properties CACHED_PROPS, String jarPropFilePath) {
         InputStream defaultsStream = null;
         // Two attempts to load the resource
         for (int i = 0; i < 2; i++) {
@@ -41,10 +41,10 @@ public final class CoreConfigLoaderUtils {
                     CACHED_PROPS.load(defaultsStream);
                     break;
                 } else {
-                    System.err.println("WARNING: " + jarPropFilePath + " is not found inside JAR (attempt " + (i + 1) + ")");
+                    System.err.println("[WARNING] " + jarPropFilePath + " is not found inside JAR (attempt " + (i + 1) + ")");
                 }
             } catch (IOException e) {
-                System.err.println("WARNING: Failed to load " + jarPropFilePath + " from inside JAR (attempt " + (i + 1) + ")");
+                System.err.println("[WARNING] Failed to load " + jarPropFilePath + " from inside JAR (attempt " + (i + 1) + ")");
             } finally {
                 // The original code does not explicitly close the stream here, but a real application
                 // should typically manage resource closure carefully.
@@ -63,7 +63,7 @@ public final class CoreConfigLoaderUtils {
      * (Key, NewValue, OldValue).
      * @param consumerPropFileName The name of the consumer properties file (e.g., "config.properties").
      */
-    public static void loadConsumerProp(Properties CACHED_PROPS, List<String[]> OVERRIDDEN_DETAILS, String consumerPropFileName) {
+    static void loadConsumerProp(Properties CACHED_PROPS, List<String[]> OVERRIDDEN_DETAILS, String consumerPropFileName) {
         try (InputStream overrideStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(consumerPropFileName)) {
             if (overrideStream != null) {
                 Properties overrideProps = new Properties();
@@ -80,7 +80,7 @@ public final class CoreConfigLoaderUtils {
                 CACHED_PROPS.putAll(overrideProps);
             }
         } catch (IOException e) {
-            System.out.println("INFO: Using default values because no config.properties file found or no keys matched with JAR's core-config.properties file keys");
+            System.out.println("[INFO] Using default values because no config.properties file found or no keys matched with JAR's core-config.properties file keys");
         }
     }
 
@@ -94,7 +94,7 @@ public final class CoreConfigLoaderUtils {
      * @param OVERRIDDEN_DETAILS A list to record the details of properties that were overridden.
      * @param consumerPropFileName The name of the consumer properties file (e.g., "config.properties").
      */
-    public static void loadConsumerCtr(Properties CACHED_PROPS_CTR, List<String[]> OVERRIDDEN_DETAILS, String consumerPropFileName) {
+    static void loadConsumerCtr(Properties CACHED_PROPS_CTR, List<String[]> OVERRIDDEN_DETAILS, String consumerPropFileName) {
         try (InputStream overrideStreamCtr = Thread.currentThread().getContextClassLoader().getResourceAsStream(consumerPropFileName)) {
             if (overrideStreamCtr != null) {
                 Properties overridePropsCtr = new Properties();
@@ -116,7 +116,7 @@ public final class CoreConfigLoaderUtils {
                 }
             }
         } catch (IOException e) {
-            System.err.println("ERROR: Failed to load consumer chaintest-related properties: " + e.getMessage());
+            System.err.println("[ERROR] Failed to load consumer chaintest-related properties: " + e.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public final class CoreConfigLoaderUtils {
      *
      * @param CACHED_PROPS_CTR The final merged {@link Properties} object to inject.
      */
-    public static void injectFinalPropertiesAsSystemProps(Properties CACHED_PROPS_CTR) {
+    static void injectFinalPropertiesAsSystemProps(Properties CACHED_PROPS_CTR) {
         if (CACHED_PROPS_CTR == null || CACHED_PROPS_CTR.isEmpty()) {
             return;
         }
@@ -154,7 +154,7 @@ public final class CoreConfigLoaderUtils {
      * @param configKey The key in the {@code CACHED_PROPS} to read the value from.
      * @param systemPropertyKey The name of the System Property to set (e.g., "log4j2.rootLevel").
      */
-    public static void injectSystemPropToLog4j2Xml(Properties CACHED_PROPS, String configKey, String systemPropertyKey) {
+    static void injectSystemPropToLog4j2Xml(Properties CACHED_PROPS, String configKey, String systemPropertyKey) {
         final String configValue = CACHED_PROPS.getProperty(configKey);
         if (System.getProperty(systemPropertyKey) == null) {
             if (configValue != null) {
@@ -171,7 +171,7 @@ public final class CoreConfigLoaderUtils {
      * @param overriddenDetails List of arrays, where each array contains [Key, NewValue, OldValue]
      * for a property that was overridden by the consumer config.
      */
-    public static void printOverrideValue(List<String[]> overriddenDetails) {
+    static void printOverrideValue(List<String[]> overriddenDetails) {
         // Since LOGGER is static in CoreConfigReader, it must be passed or accessed via a getter,
         // or re-initialized here. Re-initializing is safer for a utility class.
         final Logger LOGGER = LogManager.getLogger(CoreConfigReader.class);
@@ -182,7 +182,7 @@ public final class CoreConfigLoaderUtils {
         final int KEY_WIDTH = 30;
         final int VALUE_WIDTH = 40;
 
-        System.out.println("INFO: User's config.properties overrides JAR's defaults. See log file for full details.");
+        System.out.println("[INFO] User's config.properties overrides JAR's defaults. See log file for full details.");
 
         StringBuilder tableBuilder = new StringBuilder();
         final String ROW_FORMAT = "%-" + KEY_WIDTH + "s | %-" + VALUE_WIDTH + "s | %-" + VALUE_WIDTH + "s %n";
