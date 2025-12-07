@@ -3,5 +3,5 @@
 target/
 #target/**
 #!target/**/*.jar -> line 4 and 5 will ignore target folder files expect .jar files
-execution-output/test-recordings/
+execution-output/
 executionLogs/
