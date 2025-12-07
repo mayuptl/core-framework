@@ -58,7 +58,7 @@ public class TC03 extends CoreBaseTest {
      @Test
     public void ttt()
     {
-       String DEFAULT_REPORT_PATH = getStrProp("REPORT_OUTPUT_DIR","execution-output/test-reports/")+getStrProp("REPORT_NAME","ExtentReport.html");
+       String DEFAULT_REPORT_PATH = getStrProp("extent.report.output.dir","execution-output/test-reports/")+getStrProp("extent.report.file.name","ExtentReport.html");
        System.out.println(DEFAULT_REPORT_PATH);
     }
 }

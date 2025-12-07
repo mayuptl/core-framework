@@ -6,8 +6,7 @@ import org.openqa.selenium.WebElement;
 
 import java.sql.DriverManager;
 
-import static core.config.CoreConfigReader.getIntProp;
-import static core.config.CoreConfigReader.getStrProp;
+import static core.config.CoreConfigReader.*;
 
 /**
  * Utility class for performing standard Selenium actions while applying a
@@ -34,31 +33,16 @@ public class CoreHighlightUtil {
      * @param initialStyle The initial border color string
      * @param finalStyle The final border color string
      */
-//    private static void applyHighlight(WebElement element, String color) {
-//        WebDriver driver = CoreDriverManager.getDriver();
-//        try {
-//            scrollTo(element);
-//            JavascriptExecutor js = (JavascriptExecutor) driver;
-//            // Script for highlight: 3px dashed border of the specified color.
-//            String script = "arguments[0].style.border='3px dashed "+color+"'";
-//            js.executeScript(script, element);
-//        } catch (Exception e) {
-//            System.err.println("Highlighting failed for element: " + element + ". Error: " + e.getMessage());
-//            // Execution continues even if highlighting fails.
-//        }
-//    }
-
     private static void applyHighlight(WebElement element, String initialStyle, String finalStyle)
     {
-        // The driver, properties, and color extraction logic are correct.
+        if(!getBoolProp("apply.element.border"))
+        {
+            return;
+        }
         WebDriver driver = CoreDriverManager.getDriver();
-//        int changeMillis =Integer.parseInt(getStrProp("STYLE_CHANGE_IN_MILLIS"));
-//        int cleanupDelayMs = Integer.parseInt(getStrProp("CLEANUP_DELAY_IN_MILLIS"));
-        int changeMillis =getIntProp("STYLE_CHANGE_IN_MILLIS");
-        int cleanupDelayMs = getIntProp("CLEANUP_DELAY_IN_MILLIS");
-        //"        elem.style.boxShadow = '0 0 10px #FFD700';" +
+        int changeMillis =getIntProp("element.border.style.change.in.ms");
+        int cleanupDelayMs = getIntProp("element.border.cleanup.delay.in.ms");
         String shadowColor = "#FF0000"; // Default color in case initialStyle is malformed
-        // --- Color Extraction Logic (Corrected for robustness) ---
         // Ensure initialStyle is not null and is processed.
         if (initialStyle != null && !initialStyle.trim().isEmpty()) {
             String[] parts = initialStyle.trim().split("\\s+");
@@ -69,7 +53,6 @@ public class CoreHighlightUtil {
             }
         }
         try {
-          //  System.out.println(shadowColor);
             JavascriptExecutor js = (JavascriptExecutor) driver;
             String script =
                     "var elem = arguments[0];" +
@@ -117,7 +100,7 @@ public class CoreHighlightUtil {
      */
     public static void click(WebElement element) {
         try {
-            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+            applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
             element.click();
         } catch (Exception e) {
             System.err.println("Click failed for element: " + element + ". Error: " + e.getMessage());
@@ -133,7 +116,7 @@ public class CoreHighlightUtil {
      */
     public static void sendKeys(WebElement element, String value) {
         try {
-            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+            applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
             element.clear();
             element.sendKeys(value);
         } catch (Exception e) {
@@ -151,7 +134,7 @@ public class CoreHighlightUtil {
      */
     public static void sendKeysAppend(WebElement element, String value) {
         try {
-            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+            applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
             element.sendKeys(value);
         } catch (Exception e) {
             System.err.println("SendKeysAppend failed for element: " + element + ". Error: " + e.getMessage());
@@ -167,7 +150,7 @@ public class CoreHighlightUtil {
      */
     public static String getText(WebElement element) {
         try {
-            applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+            applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
             return element.getText();
         } catch (Exception e) {
             System.err.println("GetText failed for element: " + element + ". Error: " + e.getMessage());
@@ -194,10 +177,10 @@ public class CoreHighlightUtil {
             boolean match = expectedText.equals(actualText);
             if(match)
             {
-                applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+                applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
                 return match;
             }else {
-                applyHighlight(element, getStrProp("RED_BORDER_STYLE"),getStrProp("RED_BORDER_STYLE"));
+                applyHighlight(element, getStrProp("element.red.border.style"),getStrProp("element.red.border.style"));
                 return match;
             }
         } catch (Exception e) {
@@ -217,7 +200,7 @@ public class CoreHighlightUtil {
     public static boolean isDisplayed(WebElement element) {
         try {
             boolean displayed = element.isDisplayed();
-            if (displayed) applyHighlight(element, getStrProp("INIT_BORDER_STYLE"),getStrProp("FINAL_BORDER_STYLE"));
+            if (displayed) applyHighlight(element, getStrProp("element.initial.border.style"),getStrProp("element.final.border.style"));
             return displayed;
         } catch (Exception e) {
             System.err.println("IsDisplayed check failed for element: " + element + ". Error: " + e.getMessage());

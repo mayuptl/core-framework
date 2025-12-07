@@ -87,11 +87,13 @@ public class CoreConfigReader {
         // Step 2 : Load consumer properties
         CoreConfigLoaderUtils.loadConsumerProp(CACHED_PROPS,OVERRIDDEN_DETAILS,"config.properties");
         // Step 3 : Inject Log4j2 values, get it from .prop file and inject to log4j2.xml file
-        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"LOG_ROOT_LEVEL", "log4j2.rootLevel");
-        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"LOG_CONSOLE_PATTERN", "log4j2.consolePattern");
-        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"LOG_FILE_PATTERN", "log4j2.filePattern");
-        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"LOG_OUTPUT_DIR", "log4j2.logDir");
-        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"LOG_FILE_NAME", "log4j2.fileName");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"root.log.level", "log4j2.rootLevel");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"log.console.pattern", "log4j2.consolePattern");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"console.log.level", "log4j2.consoleLogLevel");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"log.file.pattern", "log4j2.filePattern");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"file.log.level", "log4j2.fileLogLevel");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"log.output.dir", "log4j2.logDir");
+        CoreConfigLoaderUtils.injectSystemPropToLog4j2Xml(CACHED_PROPS,"log.file.name", "log4j2.fileName");
 
         // Step 4 : Load Jars chiantest.propperties
         CoreConfigLoaderUtils.loadJarProp(CACHED_PROPS_CTR,"/chaintest.properties");
@@ -102,7 +104,7 @@ public class CoreConfigReader {
         CoreConfigLoaderUtils.injectFinalPropertiesAsSystemProps(CACHED_PROPS_CTR);
 
         // Step 7 : If consumer override Jar's .prop then it will print in log file
-        if ("true".equalsIgnoreCase(getStrProp("LOG_SHOW_OVERRIDE"))) {
+        if (getBoolProp("show.override.properties.in.logfile")) {
             CoreConfigLoaderUtils.printOverrideValue(OVERRIDDEN_DETAILS);
         }
     }

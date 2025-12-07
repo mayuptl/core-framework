@@ -7,13 +7,15 @@
         -->
         <Property name="ROOT_LEVEL">${sys:log4j2.rootLevel}</Property>
         <Property name="CONSOLE_PATTERN">${sys:log4j2.consolePattern}</Property>
+        <Property name="CONSOLE_LOG_LEVEL">${sys:log4j2.consoleLogLevel}</Property>
         <Property name="FILE_PATTERN">${sys:log4j2.filePattern}</Property>
+        <Property name="FILE_LOG_LEVEL">${sys:log4j2.fileLogLevel}</Property>
         <Property name="LOG_DIR">${sys:log4j2.logDir}</Property>
        <!-- <Property name="LOG_FILE_NAME">${sys:log4j2.logDir}${sys:log4j2.fileName}</Property>-->
     </Properties>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="${CONSOLE_LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
            <!-- <MarkerFilter marker="CONFIG_TABLE_DUMP" onMatch="DENY" onMismatch="NEUTRAL"/>-->
             <PatternLayout pattern="${CONSOLE_PATTERN}" disableAnsi="false"/>
         </Console>
@@ -21,7 +23,7 @@
                      fileName="${sys:log4j2.logDir}${sys:log4j2.fileName}"
                      filePattern="${sys:log4j2.logDir}/archive/Logs-%d{yyyy-MM-dd}-%i.log.gz"
                      createOnDemand="true">
-            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="${FILE_LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${FILE_PATTERN}"/>
             <Policies>
                 <OnStartupTriggeringPolicy />

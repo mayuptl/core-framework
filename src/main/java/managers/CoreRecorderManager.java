@@ -17,7 +17,7 @@ public class CoreRecorderManager {
     /** The ThreadLocal variable holding the unique CoreTestRecorderUtil instance for the current thread. */
     private static final ThreadLocal<CoreTestRecorderUtil> recorderThread = new ThreadLocal<>();
     /** The default output directory path for saving video recordings, retrieved from configuration. */
-    private static final String DEFAULT_VIDEO_FOLDER = getStrProp("VIDEO_OUTPUT_DIR");
+    private static final String DEFAULT_VIDEO_FOLDER = getStrProp("video.output.dir");
 
     /**
      * Initializes the thread-local recorder with a specific video name and a custom path.

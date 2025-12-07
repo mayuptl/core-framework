@@ -216,7 +216,7 @@ final class CoreConfigLoaderUtils {
         }
         tableBuilder.append(HEADER_LINE).append("\n");
 
-        LOGGER.trace(tableBuilder.toString());
+        LOGGER.debug(tableBuilder.toString());
     }
 
     /**

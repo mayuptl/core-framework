@@ -35,7 +35,7 @@ public class CoreFrameworkInitializer {
         if(initialized) return;
         // Accessing the configuration to trigger CoreConfigReader's static block.
         // This ensures properties are loaded and system properties are injected.
-        CoreConfigReader.getStrProp("BROWSER");
+        CoreConfigReader.getStrProp("browser");
         // Initializes Log4j2 using the configuration file.
         Configurator.initialize(null,"src/main/resources/log4j2.xml");
         initialized = true;

@@ -171,7 +171,7 @@ public class CoreExtentLogAttachListener implements ITestListener {
     {
         String className = result.getTestClass().getRealClass().getSimpleName();
         String methodName = result.getMethod().getMethodName();
-        String logDir=getStrProp("LOG_OUTPUT_DIR"); //execution-output/test-logs
+        String logDir=getStrProp("log.output.dir"); //execution-output/test-logs
         String folderPathString = logDir +"/class-level-logs"; //execution-output/test-logs/class-level-logs
         String relativePath = folderPathString +"/"+ className; //execution-output/test-logs/classLevelLogs/className
 

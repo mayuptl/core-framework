@@ -20,10 +20,10 @@ import static core.config.CoreConfigReader.getStrProp;
 public class CoreLogFilter {
     /** Private constructor for a utility class; all methods are static. */
     private CoreLogFilter() { }
-     /** Directory where log files are stored, configured by "LOG_OUTPUT_DIR". */
-    static String logDir = CoreConfigReader.getStrProp("LOG_OUTPUT_DIR");
+     /** Directory where log files are stored, configured by "log.output.dir". */
+    static String logDir = CoreConfigReader.getStrProp("log.output.dir");
     /** The base name of the log file, configured by "LOG_FILE_NAME". */
-    static String logFileName= CoreConfigReader.getStrProp("LOG_FILE_NAME");
+    static String logFileName= CoreConfigReader.getStrProp("log.file.name");
 /** The default full path to the log file, constructed from logDir and logFileName. */
     private static final String DEFAULT_LOG_PATH = logDir + logFileName;
 
@@ -82,9 +82,9 @@ public class CoreLogFilter {
                 System.err.println("Error: Log file not found at " + filePath);
                 return "ERROR: Log file not found.";
             }
-            final String START_MARKER = getStrProp("LOG_MARKER_START", "Test case started");
-            final String END_PASS_MARKER = getStrProp("LOG_MARKER_END_PASS", "Test case pass");
-            final String END_FAIL_MARKER = getStrProp("LOG_MARKER_END_FAIL", "Test case fail");
+            final String START_MARKER = getStrProp("fetch.log.start.marker", "Test case started");
+            final String END_PASS_MARKER = getStrProp("fetch.log.end.marker.pass", "Test case pass");
+            final String END_FAIL_MARKER = getStrProp("fetch.log.end.marker.fail", "Test case fail");
 
             // Pre-calculate common regex patterns to avoid recalculating in the loop.
             // Pattern.quote() ensures special characters in the names are treated literally.
@@ -96,7 +96,7 @@ public class CoreLogFilter {
 
             List<String> allLines = Files.readAllLines(logFilePath);
             boolean isCapturing = false;
-            final int MAX_CAPTURE_LINES = getIntProp("LOG_MAX_CAPTURE_LINES", 500);
+            final int MAX_CAPTURE_LINES = getIntProp("check.for.stop.marker.max.lines", 500);
             int captureLineCount = 0;
 
             for (String line : allLines) {

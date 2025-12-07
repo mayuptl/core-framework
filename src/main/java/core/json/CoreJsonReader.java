@@ -37,11 +37,11 @@ public class CoreJsonReader {
      * Key used within the JSON data objects to identify the test case name/ID (TCID).
      *
      * <p>The value for this constant is dynamically retrieved from the framework configuration<br>
-     * via {@code CoreConfigReader.getStrProp("JSON_DATA_TCID_KEY")} during class loading.<br>
+     * via {@code CoreConfigReader.getStrProp("json.input.data.key")} during class loading.<br>
      * This key is mandatory for methods that look up data by test case name,<br>
      * such as {@code getJsonInput} and {@code readAllJson}.</p>
      */
-    private static final String TCID_KEY = CoreConfigReader.getStrProp("JSON_DATA_TCID_KEY");
+    private static final String TCID_KEY = CoreConfigReader.getStrProp("json.input.data.key");
 
     /**
      * Retrieves the input data for a specific test case ID from a JSON array file.

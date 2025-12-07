@@ -20,7 +20,7 @@ public class CoreExtentManager {
     /** The singleton instance of ExtentReports, used to attach reporters and flush the final report. */
     private static ExtentReports extent;
     /** The default file path where the Extent Report HTML file will be saved. */
-    private static final String DEFAULT_REPORT_PATH = getStrProp("REPORT_OUTPUT_DIR")+getStrProp("REPORT_NAME");
+    private static final String DEFAULT_REPORT_PATH = getStrProp("extent.report.output.dir")+getStrProp("extent.report.file.name");
     /** ThreadLocal variable to hold the ExtentTest instance for the current executing test thread. */
     private static final ThreadLocal<ExtentTest> currentTest = new ThreadLocal<>();
     /** Concurrent map to store class-level ExtentTest nodes, ensuring thread-safe grouping of test methods. */
@@ -37,14 +37,14 @@ public class CoreExtentManager {
         if (extent == null) {
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportFilePath);
             sparkReporter.config().setTheme(Theme.STANDARD);
-            sparkReporter.config().setDocumentTitle(getStrProp("EXTENT_DOCUMENT_TITLE","Test Automation Report"));
-            sparkReporter.config().setReportName(getStrProp("EXTENT_REPORT_NAME","Test Results"));
+            sparkReporter.config().setDocumentTitle(getStrProp("extent.report.doc.title","Test Automation Report"));
+            sparkReporter.config().setReportName(getStrProp("extent.report.name","Test Results"));
             extent = new ExtentReports();
             extent.attachReporter(sparkReporter);
-            extent.setSystemInfo("REPORT_SCOPE", getStrProp("REPORT_SCOPE","Sprint testing"));
-            extent.setSystemInfo("ENVIRONMENT", getStrProp("ENVIRONMENT","Test"));
-            extent.setSystemInfo("APPLICATION_VERSION", getStrProp("APPLICATION_VERSION","-"));
-            extent.setSystemInfo("TESTER_NAME",getStrProp("TESTER_NAME","QA"));
+            extent.setSystemInfo("report.scope", getStrProp("report.scope","Sprint testing"));
+            extent.setSystemInfo("environment", getStrProp("environment","Test"));
+            extent.setSystemInfo("app.version", getStrProp("app.version","-"));
+            extent.setSystemInfo("tester.name",getStrProp("tester.name","QA"));
             //   extent.setSystemInfo("OS", System.getProperty("os.name"));
             //  extent.setSystemInfo("JAVA_VERSION", System.getProperty("java.version"));
         }

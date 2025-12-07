@@ -31,12 +31,12 @@ public class TC01 extends CoreBaseTest {
         POM pom = new POM(driver);
         POMTwo pomtwo = new POMTwo(driver);
         log.info("Test case started");
-        System.err.println(driver.getCurrentUrl());
-        threadSleep(3000);
-        CoreScreenshotUtil.stepss("current url");
-        pom.logCheck();
-        pomtwo.logCheck();
-        log.info("This test1 log to test driver id logic This test1 log to test driver id logic This test1 log to test driver id logic");
+//        System.err.println(driver.getCurrentUrl());
+//        threadSleep(3000);
+//        CoreScreenshotUtil.stepss("current url");
+//        pom.logCheck();
+//        pomtwo.logCheck();
+//        log.info("This test1 log to test driver id logic This test1 log to test driver id logic This test1 log to test driver id logic");
         pomtwo.logCheckAnother();
         pom.logCheckAnother();
      /*   Assert.fail();

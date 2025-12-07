@@ -18,7 +18,7 @@ public class CoreVideoPathUtil {
      * The default folder path where video recordings are expected to be stored.
      * Safely defaults to {@code execution-output/test-recordings/} if the configuration key is missing.
      */
-    private static final String DEFAULT_VIDEO_FOLDER = getStrProp("VIDEO_OUTPUT_DIR", "execution-output/test-recordings/");
+    private static final String DEFAULT_VIDEO_FOLDER = getStrProp("video.output.dir", "execution-output/test-recordings/");
     // /** The default file extension used for video recordings (currently {@value #DEFAULT_VIDEO_EXTENSION}). */
     private static final String DEFAULT_VIDEO_EXTENSION = ".avi";
     /**
