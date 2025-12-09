@@ -118,6 +118,7 @@ public class CoreExtentVideoLogAttachListener implements ITestListener {
         ExtentTest test = CoreExtentManager.getTest();
         String methodName = result.getMethod().getMethodName();
         stopAndAttachVideo(test, methodName);
+        attachScreenshot(test);
         test.skip("Test Skipped: " + result.getThrowable());
         CoreExtentManager.removeTest();
     }

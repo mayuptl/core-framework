@@ -106,6 +106,7 @@ public class CoreExtentLogAttachListener implements ITestListener {
     @Override
     public void onTestSkipped(ITestResult result) {
         ExtentTest test = CoreExtentManager.getTest();
+        attachScreenshot(test);
         test.skip("Test Skipped: " + result.getThrowable());
         CoreExtentManager.removeTest();
     }

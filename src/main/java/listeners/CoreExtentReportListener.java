@@ -67,8 +67,8 @@ public class CoreExtentReportListener implements ITestListener {
      */
     @Override
     public void onTestSuccess(ITestResult result) {
-        /*ExtentTest test = ExtentManager.getTest();
-         attachScreenshot(test,driver);*/
+        //ExtentTest test = ExtentManager.getTest();
+        //attachScreenshot(test,driver);
         CoreExtentManager.removeTest();
     }
 
@@ -97,6 +97,7 @@ public class CoreExtentReportListener implements ITestListener {
     @Override
     public void onTestSkipped(ITestResult result) {
         ExtentTest test = CoreExtentManager.getTest();
+        attachScreenshot(test);
         test.skip("Test Skipped: " + result.getThrowable());
         CoreExtentManager.removeTest();
     }
